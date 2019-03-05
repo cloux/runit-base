@@ -1,0 +1,2 @@
+# Config file path
+CONF=/etc/lwan.conf

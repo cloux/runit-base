@@ -1,0 +1,12 @@
+#!/bin/sh
+# OOMD - Out Of Memory killer Daemon
+# https://github.com/facebookincubator/oomd
+#
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=oomd_bin
+DAEMON=$(command -v $NAME)
+[ -x "$DAEMON" ] || exit
+
+exec "$DAEMON" 2>&1

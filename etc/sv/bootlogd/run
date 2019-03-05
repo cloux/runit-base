@@ -1,0 +1,23 @@
+#!/bin/sh
+exec 2>&1
+
+LOGFILE=/var/log/boot.log
+[ -r ./conf ] && . ./conf
+
+NAME=${PWD##*/}
+DAEMON=$(command -v "$NAME")
+[ -x "$DAEMON" ] || exit
+
+# ensure the logfile exists, so an instance running without -c
+# parameter can write the logfile
+touch "$LOGFILE"
+# stop any bootlog daemons running outside of runsvdir
+killall --quiet --exact "$NAME"
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec $DAEMON -d -c -l "$LOGFILE"

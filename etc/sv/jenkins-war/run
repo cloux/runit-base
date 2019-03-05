@@ -1,0 +1,35 @@
+#!/bin/sh
+# Run Jenkins from the WebArchive /opt/jenkins.war
+#
+# (cloux@rote.ch)
+exec 2>&1
+
+WARFILE=/opt/jenkins.war
+JENKINS_HOME=/var/lib/jenkins
+CHUSER=daemon:daemon
+HOST=localhost
+PORT=9090
+[ -r ./conf ] && . ./conf
+
+if [ ! -r "$WARFILE" ]; then
+	printf "Jenkins file %s not found. Stopping service.\n"
+	sv stop "$PWD"
+	exit
+fi
+if [ ! -x "$(command -v java)" ]; then
+	printf "Missing JAVA, Jenkins can not start. Stopping service.\n"
+	sv stop "$PWD"
+	exit
+fi
+VERSION=$(java -version 2>&1 | grep version | grep -o '1\.[0-9]*' | grep -o '[0-9]*$')
+if [ "$VERSION" != "8" ]; then
+	printf "Only Java 8 is supported, installed is version %s. Stopping service.\n" "$VERSION"
+	sv stop "$PWD"
+	exit
+fi
+[ -d "$JENKINS_HOME" ] || mkdir -p "$JENKINS_HOME"
+[ -d "$JENKINS_HOME"/tmp ] || mkdir "$JENKINS_HOME"/tmp
+chown -R $CHUSER "$JENKINS_HOME" || exit 1
+
+exec chpst -u $CHUSER java -Djava.awt.headless=true -DJENKINS_HOME="$JENKINS_HOME" -Djava.io.tmpdir="$JENKINS_HOME"/tmp \
+ -jar "$WARFILE" --httpListenAddress="$HOST" --httpPort="$PORT" 2>&1

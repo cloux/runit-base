@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# LWAN - Lightweight Asynchronous Multithreaded Event-based Webserver
+# https://lwan.ws
+#
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON=$(command -v "$NAME")
+[ -x "$DAEMON" ] || exit
+
+CONF=/etc/lwan.conf
+[ -r ./conf ] && . ./conf
+
+exec "$DAEMON" --config "$CONF"

@@ -1,0 +1,12 @@
+# Jenkins Web Archive file
+WARFILE=/opt/jenkins.war
+
+# HOME path
+JENKINS_HOME=/var/lib/jenkins
+
+# User to run as (chpst)
+CHUSER=daemon:daemon
+
+# Server name/port
+HOST=localhost
+PORT=9090
