@@ -1,3 +1,11 @@
 #!/bin/sh
+#
+# socklog - system and kernel logging services
+#
 exec 2>&1
-exec chpst -Unobody socklog
+
+NAME=${PWD##*/}
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+exec chpst -Unobody "$DAEMON"

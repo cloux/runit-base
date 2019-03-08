@@ -1,3 +1,3 @@
-Package: init initscripts insserv runit runit-init startpar sysvinit*
+Package: runit runit-init
 Pin: release *
 Pin-Priority: -1
