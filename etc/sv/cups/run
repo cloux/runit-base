@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Common Unix Printing System - Printing spooler and server
+#
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v cupsd)"
+[ -x "$DAEMON" ] || exit
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+# start logging first
+sv start socklog >/dev/null
+
+exec "$DAEMON" -f
