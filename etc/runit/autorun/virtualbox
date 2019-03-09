@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Compile VirtualBox modules for currrent kernel
+#
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[ ! -e /lib/modules/$(uname -r)/misc/vboxdrv.ko ] && vboxconfig
+
+modprobe -v --all vboxpci vboxnetadp vboxnetflt vboxdrv
