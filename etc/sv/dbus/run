@@ -18,4 +18,7 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
-exec "$DAEMON" --system --nofork --nopidfile --nosyslog
+# NOTE: --nosyslog might not be supported on older dbus
+NOSYSLOG=$($DAEMON -h 2>&1 | grep -o ..nosyslog)
+
+exec "$DAEMON" --system --nofork --nopidfile $NOSYSLOG >/dev/null 2>/dev/null

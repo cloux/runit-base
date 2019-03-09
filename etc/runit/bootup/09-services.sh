@@ -5,9 +5,9 @@
 msg "Service activation:"
 
 # irqbalance - distribute hardware interrupts across processors
-# Enable this service only in multi-CPU environment.
-# It would not run on a single-CPU anyway.
-if [ -d /etc/sv/irqbalance ]; then
+# Enable this service only in multi-CPU environment, it would
+# fail to run on a single-CPU anyway.
+if [ "$(command -v irqbalance)" ] && [ -d /etc/sv/irqbalance ]; then
 	#CPU_COUNT=$(grep -c '^processor' /proc/cpuinfo)
 	CPU_COUNT=$(nproc --all 2>/dev/null)
 	printf "   CPUs detected: %s, " "$CPU_COUNT"
