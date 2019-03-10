@@ -1,9 +1,12 @@
 #!/bin/sh
 #
-# Compile VirtualBox modules for currrent kernel
+# VirtualBox host and guest support
 #
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-[ ! -e /lib/modules/$(uname -r)/misc/vboxdrv.ko ] && vboxconfig
 
-modprobe -v --all vboxpci vboxnetadp vboxnetflt vboxdrv
+# VirtualBox Host
+[ -x /etc/init.d/vboxdrv ] && /etc/init.d/vboxdrv start
+
+# VirtualBox Guest Additions
+[ -x /etc/init.d/vboxadd ] && /etc/init.d/vboxadd start

@@ -24,3 +24,20 @@ if [ "$(command -v irqbalance)" ] && [ -d /etc/sv/irqbalance ]; then
 		printf "%s\n" "$RET"
 	fi
 fi
+
+# VirtualBox support
+# NOTE: VirtualBox autorun script could be left permanently enabled,
+# it would just generate empty /var/log/autorun-virtualbox.log
+if [ -x /etc/init.d/vboxdrv ]; then
+	VBOX=host
+elif [ -x /etc/init.d/vboxadd ]; then
+	VBOX=guest
+fi
+if [ "$VBOX" ] && [ -f /etc/runit/autorun/virtualbox ] && \
+   [ ! -x /etc/runit/autorun/virtualbox ]; then
+	printf "   VirtualBox %s detected, activating support ...\n" "$VBOX"
+	chmod 755 /etc/runit/autorun/virtualbox
+elif [ -z "$VBOX" ] && [ -x /etc/runit/autorun/virtualbox ]; then
+	printf "   VirtualBox not found, deactivating support ...\n" "$VBOX"
+	chmod 644 /etc/runit/autorun/virtualbox
+fi
