@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# Integrate runit-init system functions
+# (cloux@rote.ch)
+#
+
+# use runlevel compatibility script
+if [ ! -L /sbin/runlevel ] && [ -x /sbin/runlevel.runit ]; then
+	mv -f /sbin/runlevel /sbin/runlevel.sysv
+	ln -s runlvel.runit /sbin/runlevel
+fi
+
+# use shutdown compatibility script
+if [ ! -L /sbin/shutdown ] && [ -x /sbin/shutdown.runit ]; then
+	mv -f /sbin/shutdown /sbin/shutdown.sysv
+	ln -s shutdown.runit /sbin/shutdown
+fi
+
+# apply power control compatibility symlinks
+if [ "$(readlink -n /sbin/halt)" != "shutdown" ]; then
+	mv -vf /sbin/halt /sbin/halt.sysv
+	ln -sfv shutdown /sbin/halt
+fi
+if [ "$(readlink -n /sbin/poweroff)" != "shutdown" ]; then
+	mv -vf /sbin/poweroff /sbin/poweroff.sysv
+	ln -sfv shutdown /sbin/poweroff
+fi
+if [ -x /etc/runit/ctrlaltdel ]; then
+	if [ "$(readlink -n /sbin/ctrlaltdel)" != "/etc/runit/ctrlaltdel" ]; then
+		mv -vf /sbin/ctrlaltdel /sbin/ctrlaltdel.sysv
+		ln -sfv /etc/runit/ctrlaltdel /sbin/ctrlaltdel
+	fi
+	if [ "$(readlink -n /sbin/reboot)" != "/etc/runit/ctrlaltdel" ]; then
+		mv -vf /sbin/reboot /sbin/reboot.sysv
+		ln -sfv /etc/runit/ctrlaltdel /sbin/reboot
+	fi
+fi
+
+# If only runit-init and no other init is being used,
+# this autorun script can be disabled:
+#chmod 644 "$0"
