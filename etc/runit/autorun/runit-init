@@ -9,7 +9,7 @@
 #
 # NOTE: this will invalidate updates from the repository,
 # since package manager expects the original file instead of symlinks
-for COMPAT in insserv runlevel shutdown; do 
+for COMPAT in insserv runlevel shutdown; do
 	if [ -x /sbin/$COMPAT ] && [ ! -L /sbin/$COMPAT ] && [ -x /sbin/$COMPAT.runit ]; then
 		mv -f /sbin/$COMPAT /sbin/$COMPAT.sysv
 		ln -sv $COMPAT.runit /sbin/$COMPAT
@@ -17,14 +17,14 @@ for COMPAT in insserv runlevel shutdown; do
 done
 
 # apply power control compatibility symlinks
-for COMPAT in halt poweroff; do 
+for COMPAT in halt poweroff; do
 	if [ -f /sbin/$COMPAT ] && [ "$(readlink -n /sbin/$COMPAT)" != "shutdown" ]; then
 		mv -vf /sbin/$COMPAT /sbin/$COMPAT.sysv
 		ln -sfv shutdown /sbin/$COMPAT
 	fi
 done
 if [ -x /etc/runit/ctrlaltdel ]; then
-	for COMPAT in ctrlaltdel reboot; do 
+	for COMPAT in ctrlaltdel reboot; do
 		if [ -f /sbin/$COMPAT ] && [ "$(readlink -n /sbin/$COMPAT)" != "/etc/runit/ctrlaltdel" ]; then
 			mv -vf /sbin/$COMPAT /sbin/$COMPAT.sysv
 			ln -sfv /etc/runit/ctrlaltdel /sbin/$COMPAT

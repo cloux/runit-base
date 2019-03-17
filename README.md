@@ -12,7 +12,6 @@ This is a collection of runit-init scripts and config files required for runit w
  * runit stage [control scripts](etc/runit)
  * clean OS symlinks required by runit
  * networking, cron and other scripts that include runit support
- * apt-preferences for DEB repositories
 
 ---
 ## Installation

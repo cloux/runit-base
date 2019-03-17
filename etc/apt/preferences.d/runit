@@ -1,3 +1,0 @@
-Package: runit runit-init
-Pin: release *
-Pin-Priority: -1
