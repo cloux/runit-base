@@ -5,6 +5,7 @@ exec 2>&1
 
 NAME=${PWD##*/}
 DAEMON=$(command -v $NAME)
+[ -x "$DAEMON" ] || DAEMON=/lib/elogind/elogind
 [ -x "$DAEMON" ] || exit
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv

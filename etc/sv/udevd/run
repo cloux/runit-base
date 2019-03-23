@@ -1,10 +1,22 @@
 #!/bin/sh
+# udev/eudev dynamic device manager
+# (cloux@rote.ch)
 exec 2>&1
 
-[ -x /sbin/udevd ] || exit
+DAEMON="/sbin/udevd"
+[ -x "$DAEMON" ] || exit
 
 # udevd could be started unsupervised in the early init.
 # kill the old daemon first
 /sbin/udevadm control --exit 2>/dev/null
 
-exec /sbin/udevd
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+NAMES="udevd eudev"
+for NAME in $NAMES; do
+	if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+		mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+		ln -sf "$(command -v sv)" /etc/init.d/$NAME
+	fi
+done
+
+exec $DAEMON 2>/dev/null
