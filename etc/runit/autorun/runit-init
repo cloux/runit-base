@@ -15,7 +15,7 @@ for COMPAT in insserv runlevel shutdown; do
 		ln -sv $COMPAT.runit /sbin/$COMPAT
 	fi
 done
-for COMPAT in update-rc.d; do
+for COMPAT in start-statd update-rc.d; do
 	if [ ! -L /usr/sbin/$COMPAT ] && [ -x /usr/sbin/$COMPAT.runit ]; then
 		mv -f /usr/sbin/$COMPAT /usr/sbin/$COMPAT.sysv
 		ln -sv $COMPAT.runit /usr/sbin/$COMPAT
