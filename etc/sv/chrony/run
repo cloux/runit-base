@@ -1,0 +1,24 @@
+#!/bin/sh
+# Start chrony NTP daemon
+# (cloux@rote.ch)
+exec 2>&1
+
+DAEMON=$(command -v chronyd)
+[ -x "$DAEMON" ] || exit
+
+[ -r /etc/default/chrony ] && . /etc/default/chrony
+DAEMON_OPTS="$DAEMON_OPTS -d"
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+NAME=${PWD##*/}
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+# from manpage: It is not recommended to run chronyd when
+# another process is controlling the system clock.
+# Don't start if ntp is active
+[ -e /etc/service/ntp ] && [ "$(command -v ntpd)" ] && exit
+
+exec $DAEMON $DAEMON_OPTS 2>/dev/null
