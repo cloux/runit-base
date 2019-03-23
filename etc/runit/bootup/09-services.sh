@@ -4,6 +4,34 @@
 
 msg "Service activation:"
 
+# NFS support
+printf "   NFS client: "
+if [ -x "$(command -v rpcbind)" ]; then
+	printf "activate rpcbind ... "
+	RET=$(svactivate rpcbind 2>&1)
+else
+	printf "deactivate rpcbind ... "
+	RET=$(svdeactivate rpcbind rpc.gssd rpc.statd >/dev/null 2>&1)
+fi
+if [ $? -eq 0 ]; then
+	msg_ok
+else
+	printf "%s\n" "$RET"
+fi
+printf "   NFS server: "
+if [ -x "$(command -v rpc.mountd)" ] && [ -x "$(command -v exportfs)" ]; then
+	printf "activate rpc.mountd ... "
+	RET=$(svactivate rpc.mountd 2>&1)
+else
+	printf "deactivate rpc.mountd ... "
+	RET=$(svdeactivate rpc.mountd rpc.idmapd rpc.nfsd rpc.svcgssd >/dev/null 2>&1)
+fi
+if [ $? -eq 0 ]; then
+	msg_ok
+else
+	printf "%s\n" "$RET"
+fi
+
 # irqbalance - distribute hardware interrupts across processors
 # Enable this service only in multi-CPU environment, it would
 # fail to run on a single-CPU anyway.
@@ -16,7 +44,7 @@ if [ "$(command -v irqbalance)" ] && [ -d /etc/sv/irqbalance ]; then
 		RET=$(svactivate irqbalance 2>&1)
 	else
 		printf "deactivate irqbalance ... "
-		RET=$(svdeactivate irqbalance 2>&1)
+		RET=$(svdeactivate irqbalance >/dev/null 2>&1)
 	fi
 	if [ $? -eq 0 ]; then
 		msg_ok
