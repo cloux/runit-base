@@ -11,18 +11,10 @@ DAEMON="/sbin/udevd"
 /sbin/udevadm control --exit 2>/dev/null
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv
-NAMES="udevd eudev"
-for NAME in $NAMES; do
-	if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
-		mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
-		ln -sf "$(command -v sv)" /etc/init.d/$NAME
-	fi
-done
-# create/remove service symlink for eudev
-if [ -h /etc/init.d/eudev ]; then
-	ln -sf udevd /etc/sv/eudev
-elif [ -h /etc/sv/eudev ] && [ ! -f /etc/service/eudev ]; then
-	rm -f /etc/sv/eudev
+NAME=${PWD##*/}
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
 exec $DAEMON 2>/dev/null
