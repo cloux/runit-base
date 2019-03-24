@@ -21,6 +21,12 @@ for COMPAT in start-statd update-rc.d; do
 		ln -sv $COMPAT.runit /usr/sbin/$COMPAT
 	fi
 done
+for COMPAT in pidof; do
+	if [ ! -L /bin/$COMPAT ] && [ -x /bin/$COMPAT.runit ]; then
+		mv -f /bin/$COMPAT /bin/$COMPAT.sysv
+		ln -sv $COMPAT.runit /bin/$COMPAT
+	fi
+done
 
 # apply power control compatibility symlinks
 for COMPAT in halt poweroff; do
