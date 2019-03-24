@@ -7,6 +7,9 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # VirtualBox Host
 [ -x /etc/init.d/vboxdrv ] && /etc/init.d/vboxdrv start
+#[ -x /etc/init.d/vboxautostart-service ] && /etc/init.d/vboxautostart-service start
+#[ -x /etc/init.d/vboxballoonctrl-service ] && /etc/init.d/vboxballoonctrl-service start
+#[ -x /etc/init.d/vboxweb-service ] && /etc/init.d/vboxweb-service start
 
 # VirtualBox Guest Additions
 [ -x /etc/init.d/vboxadd ] && /etc/init.d/vboxadd start

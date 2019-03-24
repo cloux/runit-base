@@ -18,5 +18,11 @@ for NAME in $NAMES; do
 		ln -sf "$(command -v sv)" /etc/init.d/$NAME
 	fi
 done
+# create/remove service symlink for eudev
+if [ -h /etc/init.d/eudev ]; then
+	ln -sf udevd /etc/sv/eudev
+elif [ -h /etc/sv/eudev ] && [ ! -f /etc/service/eudev ]; then
+	rm -f /etc/sv/eudev
+fi
 
 exec $DAEMON 2>/dev/null
