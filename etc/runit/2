@@ -8,6 +8,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 . /etc/runit/functions
 msg "Entering Runit stage 2 ($0)"
 
+# runlevel kernel parameter support
 RUNLEVEL=default
 KERNEL_ARG=$(grep -o 'runlevel=[^ ]*' /proc/cmdline | grep -o '[^=]*$')
 if [ "$KERNEL_ARG" ]; then
@@ -20,6 +21,7 @@ else
 	msg "WARNING: Runlevel '$RUNLEVEL' does not exist!"
 fi
 
+# execute rc.local for sysvinit compatibility
 [ -x /etc/rc.local ] && /etc/rc.local
 
 exec env - PATH=$PATH \

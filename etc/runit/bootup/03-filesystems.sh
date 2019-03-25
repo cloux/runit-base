@@ -34,6 +34,13 @@ if [ -e /etc/zfs/zpool.cache ] && [ -x /usr/bin/zfs ]; then
 	# anybody is doing that, so we aren't supporting it for now.
 fi
 
+# link rootfs to /dev/root
+if [ ! -e /dev/root ]; then
+	ROOTDEVICE="$(findmnt --noheadings --output SOURCE /)"
+	msg "Link $ROOTDEVICE to /dev/root ..."
+	ln -s "$ROOTDEVICE" /dev/root
+fi
+
 # Filesystem check
 ([ -f /fastboot ] || grep -q fastboot /proc/cmdline) && FASTBOOT=1
 ([ -f /forcefsck ] || grep -q forcefsck /proc/cmdline) && FORCEFSCK="-f"
@@ -65,16 +72,26 @@ if [ -z "$FASTBOOT" ]; then
 	msg "Checking non-root filesystems:"
 	fsck -ART -t noopts=_netdev -- -p $FORCEFSCK
 fi
+# zero the root drive for base image distribution
+if [ -f /zerofree ] || grep -q zerofree /proc/cmdline; then
+	if [ -x "$(command -v zerofree)" ]; then
+		msg "Zero free blocks on /dev/root ..."
+		if [ $MOUNT_RW -eq 1 ]; then
+			msg "Remounting root read-only ..."
+			mount -o remount,ro / 2>&1 && MOUNT_RW=0
+		fi
+		if zerofree /dev/root; then
+			msg "Finished. You can shutdown, or wait 60 sec to continue boot..."
+			mount -o remount,rw / && rm -f /zerofree
+			sleep 60
+		fi
+	else
+		msg "Zero FAILED: zerofree command not found"
+	fi
+fi
 if [ $MOUNT_RW -eq 0 ]; then
 	msg "Mounting rootfs read-write ..."
 	mount -o remount,rw / 2>&1
-fi
-
-# growpart in cloud-init needs rootfs linked to /dev/root
-if [ ! -e /dev/root ]; then
-	ROOTDEVICE="$(findmnt --noheadings --output SOURCE /)"
-	msg "Link $ROOTDEVICE to /dev/root ..."
-	ln -s "$ROOTDEVICE" /dev/root
 fi
 
 msg "Mounting all non-network filesystems ..."
