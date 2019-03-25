@@ -1,49 +1,39 @@
 #!/bin/sh
 #
-# Integrate runit-init system functions
+# Integrate runit system commands
+# rename original files to *.sysv
+#
 # (cloux@rote.ch)
 #
 
-# apply compatibility scripts for runit
-# use symlinks for easy transition between different init systems
-#
-# NOTE: this will invalidate updates from the repository,
-# since package manager expects the original file instead of symlinks
-for COMPAT in insserv runlevel shutdown; do
-	if [ ! -L /sbin/$COMPAT ] && [ -x /sbin/$COMPAT.runit ]; then
-		mv -f /sbin/$COMPAT /sbin/$COMPAT.sysv
-		ln -sv $COMPAT.runit /sbin/$COMPAT
-	fi
-done
-for COMPAT in start-statd update-rc.d; do
-	if [ ! -L /usr/sbin/$COMPAT ] && [ -x /usr/sbin/$COMPAT.runit ]; then
-		mv -f /usr/sbin/$COMPAT /usr/sbin/$COMPAT.sysv
-		ln -sv $COMPAT.runit /usr/sbin/$COMPAT
-	fi
-done
-for COMPAT in pidof; do
-	if [ ! -L /bin/$COMPAT ] && [ -x /bin/$COMPAT.runit ]; then
-		mv -f /bin/$COMPAT /bin/$COMPAT.sysv
-		ln -sv $COMPAT.runit /bin/$COMPAT
-	fi
-done
-
-# apply power control compatibility symlinks
-for COMPAT in halt poweroff; do
-	if [ "$(readlink -n /sbin/$COMPAT)" != "shutdown" ]; then
-		mv -vf /sbin/$COMPAT /sbin/$COMPAT.sysv
-		ln -sfv shutdown /sbin/$COMPAT
-	fi
-done
-if [ -x /etc/runit/ctrlaltdel ]; then
-	for COMPAT in ctrlaltdel reboot; do
-		if [ "$(readlink -n /sbin/$COMPAT)" != "/etc/runit/ctrlaltdel" ]; then
-			mv -vf /sbin/$COMPAT /sbin/$COMPAT.sysv
-			ln -sfv /etc/runit/ctrlaltdel /sbin/$COMPAT
+apply_runit_cmd() {
+	for CMD in $@; do
+		[ -x "$CMDPATH/$CMD.runit" ] || continue
+		if [ "$(readlink -n "$CMDPATH/$CMD")" != "$CMD.runit" ]; then
+			[ -e "$CMDPATH/$CMD" ] && mv -f "$CMDPATH/$CMD" "$CMDPATH/$CMD".sysv
+			ln -sfv "$CMD.runit" "$CMDPATH/$CMD"
 		fi
 	done
-fi
+}
+CMDPATH=/sbin 
+apply_runit_cmd insserv runlevel shutdown
 
-# If only runit-init and no other init is being used,
-# this autorun script can be disabled:
-#chmod 644 "$0"
+CMDPATH=/usr/sbin
+apply_runit_cmd start-statd update-rc.d
+
+CMDPATH=/bin
+apply_runit_cmd pidof
+
+# apply power control symlinks
+for CMD in halt poweroff; do
+	if [ "$(readlink -n /sbin/$CMD)" != "shutdown" ]; then
+		mv -f /sbin/$CMD /sbin/$CMD.sysv
+		ln -sfv shutdown /sbin/$CMD
+	fi
+done
+for CMD in ctrlaltdel reboot; do
+	if [ "$(readlink -n /sbin/$CMD)" != "/etc/runit/ctrlaltdel" ]; then
+		mv -f /sbin/$CMD /sbin/$CMD.sysv
+		ln -sfv /etc/runit/ctrlaltdel /sbin/$CMD
+	fi
+done

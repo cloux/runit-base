@@ -80,7 +80,7 @@ if [ -f /zerofree ] || grep -q zerofree /proc/cmdline; then
 			msg "Remounting root read-only ..."
 			mount -o remount,ro / 2>&1 && MOUNT_RW=0
 		fi
-		if zerofree /dev/root; then
+		if zerofree -v /dev/root; then
 			msg "Finished. You can shutdown, or wait 60 sec to continue boot..."
 			mount -o remount,rw / && rm -f /zerofree
 			sleep 60
