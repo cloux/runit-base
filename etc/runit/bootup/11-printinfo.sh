@@ -6,13 +6,14 @@
 #
 # (cloux@rote.ch)
 
-msg "Time: $(date --iso-8601=seconds)"
-msg "CPU: $(grep -i 'model name' /proc/cpuinfo | head -n 1 | sed 's/[^:]*:\s*//') ($(nproc --all) Cores)"
-msg "RAM: $(grep MemTotal /proc/meminfo | sed 's/[^:]*:\s*//')"
+msg "System info:"
+printf "   Time: %s\n" "$(date --iso-8601=seconds)"
+printf "   CPU: %s\n" "$(grep -i 'model name' /proc/cpuinfo | head -n 1 | sed 's/[^:]*:\s*//') ($(nproc --all) Cores)"
+printf "   RAM: %s\n" "$(grep MemTotal /proc/meminfo | sed 's/[^:]*:\s*//')"
 
 LOCAL_IP="$(hostname -I 2>/dev/null)"
 if [ "$LOCAL_IP" ]; then
-	msg "LAN IP: $LOCAL_IP"
+	printf "   LAN IP: %s\n" "$LOCAL_IP"
 #	PUBLIC_IP="$(/usr/local/bin/public-ip 2>/dev/null)"
 #	[ "$PUBLIC_IP" ] && msg "WAN IP: $PUBLIC_IP"
 fi

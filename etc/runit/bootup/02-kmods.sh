@@ -21,14 +21,14 @@ modules_files() {
 		[ -d "$dir" ] || continue
 		for file in $(run-parts --list --regex='\.conf$' "$dir" 2> /dev/null || true); do
 			local base=${file##*/}
-			if echo -n "$processed" | grep -qF " $base "; then
+			if printf "%s" "$processed" | grep -qF " $base "; then
 				continue
 			fi
 			if [ "$add_etc_modules" ] && [ -L "$file" ] && [ "$(readlink -f "$file")" = /etc/modules ]; then
 				add_etc_modules=
 			fi
 			processed="$processed$base "
-			echo "$file"
+			printf "%s\n" "$file"
 		done
 	done
 
@@ -42,8 +42,8 @@ if [ "$files" ]; then
 	grep -h '^[^#]' $files |
 	while read -r module args; do
 		[ "$module" ] || continue
-		msg "+ modprobe '$module'"
-		modprobe "$module" "$args"
+		printf "   %s " "$module"
+		modprobe -q "$module" "$args" 2>&1 && printf "OK\n"
 	done
 fi
 

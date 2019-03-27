@@ -37,7 +37,7 @@ fi
 # link rootfs to /dev/root
 if [ ! -e /dev/root ]; then
 	ROOTDEVICE="$(findmnt --noheadings --output SOURCE /)"
-	msg "Link $ROOTDEVICE to /dev/root ..."
+	msg "Linking $ROOTDEVICE to /dev/root ..."
 	ln -s "$ROOTDEVICE" /dev/root
 fi
 

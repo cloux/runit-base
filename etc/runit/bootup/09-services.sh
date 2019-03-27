@@ -38,12 +38,12 @@ fi
 if [ "$(command -v irqbalance)" ] && [ -d /etc/sv/irqbalance ]; then
 	#CPU_COUNT=$(grep -c '^processor' /proc/cpuinfo)
 	CPU_COUNT=$(nproc --all 2>/dev/null)
-	printf "   irqbalance: %s CPUs: " "$CPU_COUNT"
+	printf "   irqbalance: "
 	if [ $CPU_COUNT -gt 1 ]; then
-		printf "ACTIVATE ..."
+		printf "ACTIVATE (%s CPUs) ..." "$CPU_COUNT"
 		RET=$(svactivate irqbalance 2>&1)
 	else
-		printf "deactivate ..."
+		printf "deactivate (%s CPU) ..." "$CPU_COUNT"
 		RET=$(svdeactivate irqbalance 2>&1)
 	fi
 	if [ $? -eq 0 ]; then
