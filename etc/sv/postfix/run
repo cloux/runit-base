@@ -28,7 +28,7 @@ command_directory=$(postconf -h command_directory)
 daemon_directory=$(postconf -h daemon_directory)
 
 # consistency check
-$command_directory/postfix check
+$command_directory/postfix check 2>&1
 
 # configure instance
 /usr/lib/postfix/configure-instance.sh

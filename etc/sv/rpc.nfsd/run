@@ -8,8 +8,8 @@ NAME=rpc.nfsd
 DAEMON=$(command -v $NAME)
 [ -x "$DAEMON" ] || exit
 
-# Make sure the rpc.mountd daemon is activated
-svactivate rpc.mountd >/dev/null
+# Make sure the rpcbind is running
+sv check rpcbind >/dev/null || exit
 
 # Load config
 RPCNFSDCOUNT="$(nproc)"
@@ -19,8 +19,8 @@ RPCNFSDPRIORITY=0
 [ -r ./conf ] && . ./conf
 
 # Terminate other instances
-killall --quiet --exact "$NAME"
+killall -9 --quiet --exact nfsd
 
 # Run nfsd kernel service. Doesn't have a foreground mode.
-nice -n $RPCNFSDPRIORITY "$DAEMON" -- $RPCNFSDCOUNT
+nice -n $RPCNFSDPRIORITY "$DAEMON" -- $RPCNFSDCOUNT >/dev/null
 exec chpst -L supervise/runlock chpst -l supervise/runlock true

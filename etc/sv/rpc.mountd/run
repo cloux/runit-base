@@ -9,7 +9,7 @@ DAEMON=$(command -v $NAME)
 [ -x "$DAEMON" ] || exit
 EXPORTFS=$(command -v exportfs)
 [ -x "$EXPORTFS" ] || exit
-sv start rpcbind || exit
+sv start rpcbind >/dev/null || exit
 
 # See if our running kernel supports NFSD
 if ! grep -qs '\snfsd$' /proc/filesystems; then
@@ -20,19 +20,19 @@ fi
 # Load config
 [ -r /etc/default/nfs-common ] && . /etc/default/nfs-common
 [ -r /etc/default/nfs-kernel-server ] && . /etc/default/nfs-kernel-server
-[ -z "$NEED_SVCGSSD" ] && NEED_SVCGSSD=no
 [ -r ./conf ] && . ./conf
+
+# NFSD is required
+mountpoint -q "/proc/fs/nfsd" || mount -t nfsd nfsd /proc/fs/nfsd
+svactivate rpc.nfsd >/dev/null
+sv check rpc.nfsd >/dev/null || exit
+# SVCGSSD is only required for Kerberos exports
+[ "$NEED_SVCGSSD" = "yes" ] && [ -x "$(command -v rpc.svcgssd)" ]  && svactivate rpc.svcgssd >/dev/null
+# IDMAPD might not be activated from rpcbind as common service, but is required for the server
+([ "$NEED_IDMAPD" != "no" ] && [ -x "$(command -v rpc.idmapd)" ]) && svactivate rpc.idmapd >/dev/null
 
 # Synchronize /var/lib/nfs/etab with /etc/exports and /etc/exports.d
 "$EXPORTFS" -r
-
-# Activate support services
-mountpoint -q "/proc/fs/nfsd" || mount -t nfsd nfsd /proc/fs/nfsd
-svactivate rpc.nfsd >/dev/null
-# SVCGSSD is only required for Kerberos exports
-[ "$NEED_SVCGSSD" = "yes" ] && [ -x "$(command -v rpc.svcgssd)" ]  && svactivate rpc.svcgssd
-# IDMAPD might not be activated from rpcbind as common service, but is required for the server
-([ "$NEED_IDMAPD" != "no" ] && [ -x "$(command -v rpc.idmapd)" ]) && svactivate rpc.idmapd >/dev/null
 
 # Terminate unsupervised instance
 killall --quiet --exact "$NAME"

@@ -18,12 +18,12 @@ tty=${PWD##*-}
 [ -r ./conf ] && . ./conf
 
 GETTY=$(command -v agetty)
-if [ ! -x "$GETTY" ]; then
-	GETTY=$(command -v getty)
-	[ -x "$GETTY" ] || exit 1
-fi
+[ "$GETTY" ] || GETTY=$(command -v getty)
+[ "$GETTY" ] || exit 1
 if [ "$tty" = "tty1" ]; then
 	GETTY_ARGS="--noclear"
+	# give kernel some time to flush all messages to keep the login prompt clean
+	sleep 1
 fi
 
 exec setsid $GETTY $GETTY_ARGS -- $tty $BAUD_RATE "$TERM_NAME"
