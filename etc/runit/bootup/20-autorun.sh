@@ -10,15 +10,15 @@
 # (cloux@rote.ch)
 
 if ls -l /etc/runit/autorun/ 2>/dev/null | grep -q '^[rw\-]*[xs]'; then
-	msg "Starting autorun scripts in parallel:"
+	printf '=> Starting autorun scripts in parallel:\n'
 	OUTPUT=/dev/null
 	for f in /etc/runit/autorun/*; do
 		if [ -h "$f" ]; then
-			printf "   NOTE: '%s' is a symlink and should be removed\n" "$f"
+			printf '   NOTE: %s is a symlink and should be removed\n' "$f"
 			continue
 		fi
 		([ -f "$f" ] && [ -x "$f" ]) || continue
-		printf "   %s\n" "$f"
+		printf '   %s\n' "$f"
 		[ -d /var/log ] && OUTPUT=/var/log/autorun-${f##*/}.log
 		nohup "$f" >"$OUTPUT" 2>&1 &
 	done

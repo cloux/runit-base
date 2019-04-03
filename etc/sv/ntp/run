@@ -16,4 +16,9 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
+# create ntpsec log directory
+if $DAEMON --version | grep -q ntpsec; then
+	mkdir /var/log/ntpsec 2>/dev/null && chown ntp: /var/log/ntpsec 2>/dev/null
+fi
+
 exec $DAEMON $NTPD_OPTS

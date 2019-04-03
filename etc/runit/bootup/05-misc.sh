@@ -2,12 +2,12 @@
 # from VOID Linux (https://www.voidlinux.org)
 
 if [ -f /sys/devices/system/cpu/microcode/reload ]; then
-	msg "Loading CPU microcode ..."
+	printf '=> Loading CPU microcode ...\n'
 	printf "1" > /sys/devices/system/cpu/microcode/reload
 fi
 
 if [ -f /var/lib/random-seed ]; then
-	msg "Initializing random seed ..."
+	printf '=> Initializing random seed ...\n'
 	cp /var/lib/random-seed /dev/urandom >/dev/null 2>&1 || true
 	( umask 077; bytes=$(cat /proc/sys/kernel/random/poolsize) || bytes=512; \
 		dd if=/dev/urandom of=/var/lib/random-seed count=1 bs=$bytes >/dev/null 2>&1 )
@@ -15,18 +15,18 @@ else
 	touch /var/lib/random-seed
 fi
 
-msg "Setting up loopback interface ..."
+printf '=> Setting up loopback interface ...\n'
 ip link set up dev lo
 
 [ -r /etc/hostname ] && read -r HOSTNAME < /etc/hostname
 if [ -n "$HOSTNAME" ]; then
-	msg "Setting hostname to '$HOSTNAME' ..."
-	printf "%s" "$HOSTNAME" > /proc/sys/kernel/hostname
+	printf '=> Setting hostname to %s ...\n' "$HOSTNAME"
+	printf '%s' "$HOSTNAME" > /proc/sys/kernel/hostname
 else
-	msg_warn "Didn't setup a hostname!"
+	printf 'WARNING: Didn'\''t setup a hostname!\n'
 fi
 
 if [ -n "$TIMEZONE" ]; then
-	msg "Setting up timezone to '$TIMEZONE' ..."
+	printf '=> Setting up timezone to %s ...\n' "$TIMEZONE"
 	ln -sf "/usr/share/zoneinfo/$TIMEZONE" /etc/localtime
 fi

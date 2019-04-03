@@ -1,18 +1,18 @@
 # *-*- Shell Script -*-*
 # from VOID Linux (https://www.voidlinux.org)
 
-[ -n "$VIRTUALIZATION" ] && return 0
+[ "$VIRTUALIZATION" ] && return 0
 
 if [ -x /sbin/udevd ] || [ -x /bin/udevd ]; then
 	_udevd=udevd
 elif [ -x /usr/lib/systemd/systemd-udevd ]; then
 	_udevd=/usr/lib/systemd/systemd-udevd
 else
-	msg_warn "cannot find udevd!"
+	printf 'WARNING: cannot find udevd!\n'
 fi
 
 if [ "${_udevd}" ]; then
-	msg "Starting udev ..."
+	printf '=> Starting udev ...\n'
 	${_udevd} --daemon
 	udevadm trigger --action=add --type=subsystems
 	udevadm trigger --action=add --type=devices
@@ -21,6 +21,6 @@ if [ "${_udevd}" ]; then
 	#       see: dmesg | grep 'random: crng init done'
 	#       There is no need to block the system until udev finishes,
 	#       if a service needs a specific device, that service should wait.
-	#msg "Waiting for devices to settle ..."
+	#printf '=> Waiting for devices to settle ...\n'
 	#udevadm settle --timeout=1
 fi

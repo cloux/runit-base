@@ -1,7 +1,7 @@
 # *-*- Shell Script -*-*
 # from VOID Linux (https://www.voidlinux.org)
 
-msg "Mounting pseudo-filesystems ..."
+printf '=> Mounting pseudo-filesystems ...\n'
 mountpoint -q /proc || mount -o nosuid,noexec,nodev -t proc proc /proc
 mountpoint -q /proc/sys/fs/binfmt_misc || ( [ -d /proc/sys/fs/binfmt_misc ] && \
               mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc )

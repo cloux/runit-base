@@ -16,12 +16,12 @@ if [ -e /etc/service/bootlogd ] && [ -x /sbin/bootlogd ]; then
 	/sbin/bootlogd -l /var/log/boot.log
 fi
 
-. /etc/runit/functions
-
-msg "Entering Runit stage 1 ($0)"
+printf '=> Entering Runit stage 1 (%s)\n' "$0"
 
 [ -r /etc/rc.conf ] && . /etc/rc.conf
-detect_virt
+
+# Detect LXC virtualization containers
+grep -q lxc /proc/self/environ >/dev/null && VIRTUALIZATION=1
 
 # Run bootup scripts
 for f in /etc/runit/bootup/*.sh; do
@@ -35,5 +35,5 @@ else
 	chmod 0644 /var/log/dmesg.log
 fi
 
-BOOTTIME=$(printf "scale=3; (%s - %s)/1\n" $(date +%s.%N) $BOOTSTART | bc)
-msg "Runit stage 1 completed in $BOOTTIME sec, running stage 2..."
+BOOTTIME=$(printf 'scale=3; (%s - %s)/1\n' "$(date +%s.%N)" "$BOOTSTART" | bc)
+printf '=> Runit stage 1 completed in %s sec, running stage 2...\n' "$BOOTTIME"

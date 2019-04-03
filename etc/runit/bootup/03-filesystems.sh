@@ -4,28 +4,28 @@
 [ "$VIRTUALIZATION" ] && return 0
 
 if [ -x /sbin/dmraid ] || [ -x /bin/dmraid ]; then
-	msg "Activating dmraid devices ..."
+	printf '=> Activating dmraid devices ...\n'
 	dmraid -i -ay 2>&1
 fi
 
 if [ -x /bin/btrfs ]; then
-	msg "Activating btrfs devices ..."
+	printf '=> Activating btrfs devices ...\n'
 	btrfs device scan 2>&1
 fi
 
 if [ -x /sbin/vgchange ] || [ -x /bin/vgchange ]; then
-	msg "Activating LVM devices ..."
+	printf '=> Activating LVM devices ...\n'
 	vgchange --sysinit -a ay 2>&1
 fi
 
 if [ -e /etc/zfs/zpool.cache ] && [ -x /usr/bin/zfs ]; then
-	msg "Activating ZFS devices ..."
+	printf '=> Activating ZFS devices ...\n'
 	zpool import -c /etc/zfs/zpool.cache -N -a
 
-	msg "Mounting ZFS file systems ..."
+	printf '=> Mounting ZFS file systems ...\n'
 	zfs mount -a
 
-	msg "Sharing ZFS file systems ..."
+	printf '=> Sharing ZFS file systems ...\n'
 	zfs share -a
 
 	# NOTE(dh): ZFS has ZVOLs, block devices on top of storage pools.
@@ -37,7 +37,7 @@ fi
 # link rootfs to /dev/root
 if [ ! -e /dev/root ]; then
 	ROOTDEVICE="$(findmnt --noheadings --output SOURCE /)"
-	msg "Linking $ROOTDEVICE to /dev/root ..."
+	printf '=> Linking %s to /dev/root ...\n' "$ROOTDEVICE"
 	ln -s "$ROOTDEVICE" /dev/root
 fi
 
@@ -48,53 +48,51 @@ MOUNT_RW=$(mount | grep -m 1 -c ' / .*[(\s,]rw[\s,)]')
 if [ -z "$FASTBOOT" ]; then
 	if [ "$FORCEFSCK" ]; then
 		if [ $MOUNT_RW -eq 1 ]; then
-			msg "Remounting root read-only ..."
+			printf '=> Remounting root read-only ...\n'
 			mount -o remount,ro / 2>&1
 			MOUNT_RW=0
 		fi
-		msg "Force checking rootfs:"
+		printf '=> Force checking rootfs:\n'
 		fsck -T / -- -p $FORCEFSCK
 	else
 		# repair the filesystem only if damaged.
 		# this should allow faster boot if filesystem is OK
-		msg "Checking rootfs:"
+		printf '=> Checking rootfs:\n'
 		fsck -T / -- -n
 		if [ $? -ne 0 ]; then
 			if [ $MOUNT_RW -eq 1 ]; then
-				msg "Remounting root read-only ..."
+				printf '=> Remounting root read-only ...\n'
 				mount -o remount,ro / 2>&1
 				MOUNT_RW=0
 			fi
-			msg "Repairing damaged rootfs:"
+			printf '=> Repairing damaged rootfs:\n'
 			fsck -T / -- -p
 		fi
 	fi
-	msg "Checking non-root filesystems:"
+	printf '=> Checking non-root filesystems:\n'
 	fsck -ART -t noopts=_netdev -- -p $FORCEFSCK
 fi
 # zero the root drive for base image distribution
 if [ -f /zerofree ] || grep -q zerofree /proc/cmdline; then
 	if [ -x "$(command -v zerofree)" ]; then
-		msg "Zero free blocks on /dev/root ..."
+		printf '=> Zero free blocks on /dev/root ...\n'
 		if [ $MOUNT_RW -eq 1 ]; then
-			msg "Remounting root read-only ..."
+			printf '=> Remounting root read-only ...\n'
 			mount -o remount,ro / 2>&1 && MOUNT_RW=0
 		fi
 		if zerofree -v /dev/root; then
-			msg "Finished. You can shutdown, or wait 60 sec to continue boot..."
+			printf '=> Finished. You can shutdown, or wait 60 sec to continue boot...\n'
 			mount -o remount,rw / && rm -f /zerofree
 			sleep 60
 		fi
 	else
-		msg "Zero FAILED: zerofree command not found"
+		printf '=> Zero FAILED: zerofree command not found\n'
 	fi
 fi
 if [ $MOUNT_RW -eq 0 ]; then
-	msg "Mounting rootfs read-write ..."
+	printf '=> Mounting rootfs read-write ...\n'
 	mount -o remount,rw / 2>&1
 fi
 
-msg "Mounting all non-network filesystems ..."
+printf '=> Mounting all non-network filesystems ...\n'
 mount -a -t "nosysfs,nonfs,nonfs4,nosmbfs,nocifs" -O no_netdev
-
-

@@ -6,27 +6,24 @@ exec 2>&1
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin 
 
-. /etc/runit/functions
+printf '=> Entering Runit stage 3 (%s)\n' "$0"
 
-msg "Entering Runit stage 3 ($0)"
-
-detect_virt
 [ -r /etc/rc.conf ] && . /etc/rc.conf
 
 if [ -e /run/runit.kexecreboot ]; then
 	if command -v kexec >/dev/null; then
-		msg "Rebooting using kexec"
+		printf '=> Rebooting using kexec\n'
 	else
-		msg_error "kexec reboot failed, rebooting normally"
+		printf 'ERROR: kexec reboot failed, rebooting normally\n'
 	fi
 elif [ -e /run/runit.reboot ]; then
-	msg "Rebooting system"
+	printf '=> Rebooting system\n'
 else
-	msg "Shutdown and halt the system"
+	printf '=> Shutdown and halt the system\n'
 fi
 
-msg "Waiting for services to stop..."
-msg "Further messages will not be logged to disk"
+printf '=> Waiting for services to stop...\n'
+printf '=> Further messages will not be logged to disk\n'
 sv -w 5 force-stop /etc/service/*
 sv exit /etc/service/*
 
@@ -35,37 +32,42 @@ mv -f /var/log/boot.log /var/log/boot.log.1
 
 [ -x /etc/rc.shutdown ] && /etc/rc.shutdown
 
-msg "Saving random seed..."
+printf '=> Saving random seed...\n'
 ( umask 077; bytes=$(cat /proc/sys/kernel/random/poolsize) || bytes=512; \
   dd if=/dev/urandom of=/var/lib/random-seed count=1 bs=$bytes >/dev/null 2>&1 )
 
+# Detect LXC virtualization containers
+grep -q lxc /proc/self/environ >/dev/null && VIRTUALIZATION=1
 if [ -z "$VIRTUALIZATION" ]; then
-	msg "Stopping udev..."
+	printf '=> Stopping udev...\n'
 	udevadm control --exit
 fi
 
-msg "Sending ALRM signal to processes..."
+printf '=> Sending ALRM signal to processes...\n'
 kill -14 -1
-msg "Sending TERM signal to processes..."
+printf '=> Sending TERM signal to processes...\n'
 pkill --inverse --session 0,1 -TERM
 sleep 1
-msg "Sending KILL signal to processes..."
+printf '=> Sending KILL signal to processes...\n'
 pkill --inverse --session 0,1 -KILL
 
 if [ -z "$VIRTUALIZATION" ]; then
-	msg "Unmounting filesystems, disabling swap..."
+	printf '=> Unmounting filesystems, disabling swap...\n'
 	swapoff -a
 	umount -r -a -t noproc,nosysfs,nodevfs,nodevpts,nodevtmpfs,notmpfs &
 	sleep 0.5
-fi
-
-if [ -z "$VIRTUALIZATION" ]; then
-	deactivate_vgs
+	# deactivate vgs
+	VGCHANGE="$(command -v vgchange)"
+	if [ "$VGCHANGE" ] && [ "$(vgs | wc -l)" -gt 0 ]; then
+		printf '=> Deactivating all LVM Volume Groups...\n'
+		$VGCHANGE -an
+	fi
+	# trigger kexec reboot
 	if [ -e /run/runit.kexecreboot ] && command -v kexec >/dev/null; then
-		msg "Triggering kexec reboot of the current kernel..."
+		printf '=> Triggering kexec reboot of the current kernel...\n'
 		kexec -e 2>/dev/null
 		# not reached when kexec was successful.
 	fi
 fi
 
-msg "Triggering reboot..."
+printf '=> Triggering reboot...\n'

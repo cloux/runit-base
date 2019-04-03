@@ -1,7 +1,7 @@
 # *-*- Shell Script -*-*
 # from VOID Linux (https://www.voidlinux.org)
 
-msg "Cleanup ..."
+printf '=> Cleanup ...\n'
 
 install -m0664 -o root -g utmp /dev/null /run/utmp
 [ -e /var/log/wtmp ] || install -m0664 -o root -g utmp /dev/null /var/log/wtmp

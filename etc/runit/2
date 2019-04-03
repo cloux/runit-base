@@ -5,20 +5,19 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-. /etc/runit/functions
-msg "Entering Runit stage 2 ($0)"
+printf '=> Entering Runit stage 2 (%s)\n' "$0"
 
 # runlevel kernel parameter support
 RUNLEVEL=default
 KERNEL_ARG=$(grep -o 'runlevel=[^ ]*' /proc/cmdline | grep -o '[^=]*$')
 if [ "$KERNEL_ARG" ]; then
-	msg "Runlevel detected: '$KERNEL_ARG' (via kernel cmdline)"
+	printf '=> Runlevel detected: %s (via kernel cmdline)\n' "$KERNEL_ARG"
 	RUNLEVEL="$KERNEL_ARG"
 fi
 if [ -d /etc/runit/runsvdir/$RUNLEVEL ]; then
 	runsvchdir $RUNLEVEL >/dev/null
 else
-	msg "WARNING: Runlevel '$RUNLEVEL' does not exist!"
+	printf '=> WARNING: Runlevel %s does not exist!\n' "$RUNLEVEL"
 fi
 
 # execute rc.local for sysvinit compatibility
