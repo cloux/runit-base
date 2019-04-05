@@ -16,7 +16,7 @@ SWAP_PATH=
 [ -s /etc/default/swapfile ] && . /etc/default/swapfile
 if [ ! -d "$SWAP_PATH" ]; then
 	# wait for mount to finish after boot
-	sleep 2
+	sleep 5
 	if [ ! -d "$SWAP_PATH" ]; then
 		printf "Error: swap path %s is not available.\n" "$SWAP_PATH"
 		exit

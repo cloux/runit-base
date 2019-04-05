@@ -10,14 +10,14 @@ DAEMON="$(command -v mysqld)"
 [ -e /var/run/mysqld ] || install -m 755 -o mysql -g root -d /var/run/mysqld
 
 export HOME=/etc/mysql
-if [ ! -r "$HOME/my.cnf" ]; then
-	printf "ERROR: %s/my.cnf cannot be read." "$HOME"
+if [ ! -e "$HOME/my.cnf" ]; then
+	printf 'ERROR: %s/my.cnf is missing.\n' "$HOME"
 	exit 1
 fi
 
-DATADIR=$(grep '^datadir' "$HOME/my.cnf" | sed 's/.*=\s*//')
+DATADIR=$(grep -R '^datadir' "$HOME"/* 2>/dev/null | tail -n 1 | sed 's/.*=\s*//')
 if [ ! -d "$DATADIR" ]; then
-	printf "ERROR: datadir in %s/my.cnf is not a directory." "$HOME"
+	printf 'ERROR: datadir configuration in %s is invalid.\n' "$HOME"
 	exit 1
 fi
 
