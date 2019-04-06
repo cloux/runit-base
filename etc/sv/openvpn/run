@@ -34,7 +34,7 @@ if grep -q '^\s*dev\s*tun' $CONFIG_FILE && grep -q '^\s*topology\s*subnet' $CONF
 		if [ "$SAVED_DEFAULT_SEND_REDIRECTS" -ne 0 ]; then
 			sysctl -w net.ipv4.conf.default.send_redirects=0 > /dev/null
 		fi
-		printf "%s" "$SAVED_DEFAULT_SEND_REDIRECTS" > /run/openvpn-${NAME}.SEND_REDIRECTS 2>/dev/null
+		printf '%s' "$SAVED_DEFAULT_SEND_REDIRECTS" > /run/openvpn-${NAME}.SEND_REDIRECTS 2>/dev/null
 	fi
 fi
 

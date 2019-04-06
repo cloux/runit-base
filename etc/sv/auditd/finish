@@ -4,6 +4,6 @@
 [ -r /etc/default/auditd ] && . /etc/default/auditd
 [ -r ./conf ] && . ./conf
 
-if [ -z "$(printf "%s" "$AUDITD_CLEAN_STOP" | grep -i 'no')" ]; then
+if [ -z "$(printf '%s' "$AUDITD_CLEAN_STOP" | grep -i 'no')" ]; then
   [ -f /etc/audit/audit-stop.rules ] && /sbin/auditctl -R /etc/audit/audit-stop.rules 2>/dev/null >/dev/null
 fi

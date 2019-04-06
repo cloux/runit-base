@@ -20,6 +20,9 @@ mountpoint -q /run/rpc_pipefs || mount -o nosuid,noexec,nodev -t rpc_pipefs rpc_
 # compatibility symlink
 ln -sf /run/shm /dev/shm
 
+# Detect LXC virtualization containers
+grep -q lxc /proc/self/environ >/dev/null && export VIRTUALIZATION=1
+
 if [ -z "$VIRTUALIZATION" ]; then
 	mountpoint -q /sys/fs/cgroup || mount -o mode=0755 -t tmpfs cgroup /sys/fs/cgroup
 	awk '$4 == 1 { system("mountpoint -q /sys/fs/cgroup/" $1 " || { mkdir -p /sys/fs/cgroup/" $1 " && mount -t cgroup -o " $1 " cgroup /sys/fs/cgroup/" $1 " ;}" ) }' /proc/cgroups

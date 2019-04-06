@@ -6,11 +6,11 @@
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 
 # check root access
-if [ $(id -u) -ne 0 ]; then printf "Need to be root!\n"; exit 1; fi
+if [ $(id -u) -ne 0 ]; then printf 'Need to be root!\n'; exit 1; fi
 
 # check PID1
 if grep -vq runit /proc/1/cmdline; then
-	printf "ERROR: runit is not PID1, reboot failed.\n"
+	printf 'ERROR: runit is not PID1, reboot failed.\n'
 	exit 1
 fi
 
@@ -26,7 +26,7 @@ install --mode=0 /dev/null /run/runit.stopit
 install --mode=755 /dev/null /run/runit.reboot
 
 # print warning to all terminals
-printf "\n%s\n" "$MSG" | wall --nobanner
+printf '\n%s\n' "$MSG" | wall --nobanner
 
 # find runit-init binary
 RUNIT_INIT=$(grep -o 'init=[^ ]*' /proc/cmdline | grep -o '[^=]*$')

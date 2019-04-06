@@ -7,24 +7,26 @@
 
 # quit if there is already active swap space
 if [ $(grep -ivc '^Filename' /proc/swaps 2>/dev/null) -ne 0 ]; then
-	printf "Swap is already active.\n"
+	printf 'Swap is already active.\n'
 	exit
 fi
 
 # default swapfile path
 SWAP_PATH=
 [ -s /etc/default/swapfile ] && . /etc/default/swapfile
+[ "$SWAP_PATH" ] || exit
 if [ ! -d "$SWAP_PATH" ]; then
 	# wait for mount to finish after boot
 	sleep 5
 	if [ ! -d "$SWAP_PATH" ]; then
-		printf "Error: swap path %s is not available.\n" "$SWAP_PATH"
+		printf 'Error: swap path %s is not available.\n' "$SWAP_PATH"
 		exit
 	fi
 fi
 
-# make unique swapfile name (from AWS instance name)
+# use unique swapfile name from AWS instance name or hostname
 INSTANCE_ID="$(/usr/local/bin/ec2-metadata --instance-id 2>/dev/null | grep -io '[a-z0-9\-]*$')"
+[ "$INSTANCE_ID" ] || INSTANCE_ID="$(hostname)"
 [ "$INSTANCE_ID" ] || exit
 
 # create new swapfile
@@ -32,20 +34,23 @@ SWAPFILE="$SWAP_PATH/$INSTANCE_ID.swap"
 if [ ! -f "$SWAPFILE" ]; then
 	RAMSIZE="$(grep -i '^MemTotal.*kB' /proc/meminfo | grep -o '[0-9]*')"
 	SWAPSIZE=$RAMSIZE
-	(printf "%s" "$SWAPSIZE" | grep -q '^[0-9][0-9]*$' && [ "$SWAPSIZE" -le 4194304 ]) || SWAPSIZE=4194304
+	# limit swap size to 4GB
+	if printf '%s' "$SWAPSIZE" | grep -q '^[0-9][0-9]*$' && [ "$SWAPSIZE" -le 4194304 ]; then
+		SWAPSIZE=4194304
+	fi
 	FREESPACE="$(df --output=avail --block-size=K "$SWAP_PATH" | grep -o '[0-9]*')"
 	if [ $FREESPACE -ge $SWAPSIZE ]; then
-		printf "Creating new swapfile: %s [%s kB] ...\n" "$SWAPFILE" "$SWAPSIZE"
+		printf 'Creating new swapfile: %s [%s kB] ...\n' "$SWAPFILE" "$SWAPSIZE"
 		dd if=/dev/zero of="$SWAPFILE" bs=1024 count=$SWAPSIZE
 		mkswap "$SWAPFILE"
 		chmod 0600 "$SWAPFILE"
 	else
-		printf "Error: swapfile cannot be created. Free space in %s is %s kB, required minimum is %s.\n" \
+		printf 'Error: swapfile cannot be created. Free= space in %s is %s kB, required minimum is %s.\n' \
 		"$SWAP_PATH" "$FREESPACE" "$SWAPSIZE"
 	fi
 fi
 
 # enable swapfile
 [ -f "$SWAPFILE" ] && swapon -v "$SWAPFILE"
-printf "\nSwap status:\n"
+printf '\nSwap status:\n'
 swapon --summary

@@ -3,7 +3,7 @@
 
 if [ -f /sys/devices/system/cpu/microcode/reload ]; then
 	printf '=> Loading CPU microcode ...\n'
-	printf "1" > /sys/devices/system/cpu/microcode/reload
+	printf '1' > /sys/devices/system/cpu/microcode/reload
 fi
 
 if [ -f /var/lib/random-seed ]; then

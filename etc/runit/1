@@ -20,9 +20,6 @@ printf '=> Entering Runit stage 1 (%s)\n' "$0"
 
 [ -r /etc/rc.conf ] && . /etc/rc.conf
 
-# Detect LXC virtualization containers
-grep -q lxc /proc/self/environ >/dev/null && VIRTUALIZATION=1
-
 # Run bootup scripts
 for f in /etc/runit/bootup/*.sh; do
 	[ -r "$f" ] && . "$f"

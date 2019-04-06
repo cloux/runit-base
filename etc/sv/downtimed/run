@@ -17,6 +17,6 @@ fi
 
 [ -r ./conf ] && . ./conf
 [ "$FSYNC" = "n" ] && PAR_DISABLE_FSYNC="-S"
-(printf "%s" "$RESOLUTION" | grep -q '^[0-9]*$') && PAR_SPEED="-s $RESOLUTION"
+(printf '%s' "$RESOLUTION" | grep -q '^[0-9]*$') && PAR_SPEED="-s $RESOLUTION"
 
 exec "$DAEMON" -F -p none $PAR_DISABLE_FSYNC $PAR_SPEED

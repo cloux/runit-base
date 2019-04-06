@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# HAProxy - fast and reliable http reverse proxy and load balancer
+#
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON=$(command -v $NAME)
+[ -x "$DAEMON" ] || exit
+
+# load configuration
+RUNDIR=/run/haproxy
+CONFIG=/etc/haproxy/haproxy.cfg
+[ -r ./conf ] && . ./conf
+[ -r /etc/default/haproxy ] && . /etc/default/haproxy
+[ -e "$CONFIG" ] || exit 1
+[ -d "$RUNDIR" ] || mkdir "$RUNDIR"
+chown haproxy:haproxy "$RUNDIR"
+chmod 2775 "$RUNDIR"
+
+# ensure the daemon mode is disabled
+if [ -f "$CONFIG" ]; then
+	grep -q '^\s*daemon\s*$' "$CONFIG" && EXTRAOPTS="$EXTRAOPTS -db"
+elif [ -d "$CONFIG" ]; then
+	grep -q '^\s*daemon\s*$' "$CONFIG"/*.cfg 2>/dev/null && EXTRAOPTS="$EXTRAOPTS -db"
+fi
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+killall --quiet --exact "$NAME"
+exec "$DAEMON" -f "$CONFIG" $EXTRAOPTS 2>/dev/null

@@ -13,7 +13,7 @@ sv start rpcbind >/dev/null || exit
 
 # See if our running kernel supports NFSD
 if ! grep -qs '\snfsd$' /proc/filesystems; then
-	printf "No NFSD support in current kernel.\n"
+	printf 'No NFSD support in current kernel.\n'
 	exit
 fi
 

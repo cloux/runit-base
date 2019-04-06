@@ -9,7 +9,7 @@ STATEDIR="$RUN_DIR/state"
 CONFIGURE_INTERFACES=yes
 VERBOSE=no
 
-printf "Configure networking started at %s\n" "$(date '+%F_%T.%N')"
+printf 'Networking configuration started at %s\n' "$(date '+%F_%T.%N')"
 
 [ -f /etc/default/networking ] && . /etc/default/networking
 verbose=""
@@ -23,13 +23,13 @@ fi
 
 if [ ! -d "$RUN_DIR" ]; then
 	if mkdir -p "$RUN_DIR" 2>/dev/null; then
-		chown root:netdev "$RUN_DIR" 2>/dev/null || printf "WARNING: can't chown %s\n" "$RUN_DIR"
+		chown root:netdev "$RUN_DIR" 2>/dev/null || printf 'WARNING: can'\''t chown %s\n' "$RUN_DIR"
 	else
-		printf "WARNING: can't create %s\n" "$RUN_DIR"
+		printf 'WARNING: can'\''t create %s\n' "$RUN_DIR"
 	fi
 fi
 if [ ! -e "$IFSTATE" ]; then
-	touch "$IFSTATE" 2>/dev/null || printf "WARNING: can't initialize %s\n" "$IFSTATE"
+	touch "$IFSTATE" 2>/dev/null || printf 'WARNING: can'\''t initialize %s\n' "$IFSTATE"
 fi
 
 ifup_hotplug() {
@@ -45,10 +45,13 @@ ifup_hotplug() {
 }
 
 if [ "$CONFIGURE_INTERFACES" = no ]; then
-	printf "Not configuring network interfaces, see /etc/default/networking\n"
+	printf 'Not configuring network interfaces, see /etc/default/networking\n'
 else
 	ifup --all --exclude=lo --ignore-errors $verbose
 	ifup_hotplug $verbose
 fi
 
-printf "Configure networking finished at: %s\n\n" "$(date '+%F_%T.%N')"
+# network interfaces might need remount if if-up.d/mountnfs failed
+mount -a
+
+printf 'Configure networking finished at: %s\n\n' "$(date '+%F_%T.%N')"
