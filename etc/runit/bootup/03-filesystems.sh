@@ -46,29 +46,17 @@ fi
 ([ -f /forcefsck ] || grep -q forcefsck /proc/cmdline) && FORCEFSCK="-f"
 MOUNT_RW=$(mount | grep -m 1 -c ' / .*[(\s,]rw[\s,)]')
 if [ -z "$FASTBOOT" ]; then
-	if [ "$FORCEFSCK" ]; then
-		if [ $MOUNT_RW -eq 1 ]; then
-			printf '=> Remounting root read-only ...\n'
-			mount -o remount,ro / 2>&1
-			MOUNT_RW=0
-		fi
-		printf '=> Force checking rootfs:\n'
-		fsck -T / -- -p $FORCEFSCK
-	else
-		# repair the filesystem only if damaged.
-		# this should allow faster boot if filesystem is OK
-		printf '=> Checking rootfs:\n'
-		fsck -T / -- -n
-		if [ $? -ne 0 ]; then
-			if [ $MOUNT_RW -eq 1 ]; then
-				printf '=> Remounting root read-only ...\n'
-				mount -o remount,ro / 2>&1
-				MOUNT_RW=0
-			fi
-			printf '=> Repairing damaged rootfs:\n'
-			fsck -T / -- -p
-		fi
+	if [ $MOUNT_RW -eq 1 ]; then
+		printf '=> Remounting root read-only ...\n'
+		mount -o remount,ro / 2>&1
+		MOUNT_RW=0
 	fi
+	if [ "$FORCEFSCK" ]; then
+		printf '=> Force checking rootfs:\n'
+	else
+		printf '=> Checking rootfs:\n'
+	fi
+	fsck -T / -- -p $FORCEFSCK
 	printf '=> Checking non-root filesystems:\n'
 	fsck -ART -t noopts=_netdev -- -p $FORCEFSCK
 fi
