@@ -8,6 +8,7 @@ DAEMON="$(command -v mysqld)"
 [ -f /etc/default/mysql ] && . /etc/default/mysql
 [ -f /etc/default/mariadb ] && . /etc/default/mariadb
 [ -e /var/run/mysqld ] || install -m 755 -o mysql -g root -d /var/run/mysqld
+[ -d /var/log/mysql ] && chown mysql /var/log/mysql 2>/dev/null
 
 export HOME=/etc/mysql
 if [ ! -e "$HOME/my.cnf" ]; then
