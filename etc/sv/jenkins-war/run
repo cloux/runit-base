@@ -1,16 +1,19 @@
 #!/bin/sh
-# Run Jenkins from the WebArchive /opt/jenkins.war
+# Run Jenkins from a WebArchive (WAR file)
 #
 # (cloux@rote.ch)
 exec 2>&1
 
+# default config
 WARFILE=/opt/jenkins.war
+JENKINS_USER=jenkins
 JENKINS_HOME=/var/lib/jenkins
-CHUSER=daemon:daemon
 HOST=localhost
 PORT=9090
+# allow configuration override
 [ -r ./conf ] && . ./conf
 
+# sanity check
 if [ ! -r "$WARFILE" ]; then
 	printf 'Jenkins file %s not found. Stopping service.\n' "$WARFILE"
 	sv stop "$PWD"
@@ -21,16 +24,22 @@ if [ ! -x "$(command -v java)" ]; then
 	sv stop "$PWD"
 	exit
 fi
-VERSION=$(java -version 2>&1 | grep version | grep -o '1\.[0-9]*' | grep -o '[0-9]*$')
+VERSION=$(java -version 2>&1 | grep version | head -n 1 | sed 's/^[^"]*"//' | \
+ sed 's/".*$//' | sed 's/^[^.]\.//' | sed 's/\..*$//')
 if [ "$VERSION" != "8" ]; then
 	printf 'Only Java 8 is supported, installed is version %s. Stopping service.\n' "$VERSION"
 	sv stop "$PWD"
 	exit
 fi
+
+# create user if required
+id $JENKINS_USER 2>/dev/null || adduser --system --group --home $JENKINS_HOME \
+ --shell /usr/sbin/nologin --disabled-password $JENKINS_USER
+# prepare home filesystem
 [ -d "$JENKINS_HOME" ] || mkdir -p "$JENKINS_HOME"
 [ -d "$JENKINS_HOME"/tmp ] || mkdir "$JENKINS_HOME"/tmp
-chown -R $CHUSER "$JENKINS_HOME" || exit 1
+chown -R $JENKINS_USER: "$JENKINS_HOME" || exit 1
 
-exec chpst -u $CHUSER java -Djava.awt.headless=true -DJENKINS_HOME="$JENKINS_HOME" \
+exec chpst -u $JENKINS_USER java -Djava.awt.headless=true -DJENKINS_HOME="$JENKINS_HOME" \
  -Djava.io.tmpdir="$JENKINS_HOME"/tmp -jar "$WARFILE" --httpListenAddress="$HOST" \
  --httpPort="$PORT" 2>&1

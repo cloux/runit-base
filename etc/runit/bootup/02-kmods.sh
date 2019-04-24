@@ -42,8 +42,8 @@ if [ "$files" ]; then
 	grep -h '^[^#]' $files |
 	while read -r module args; do
 		[ "$module" ] || continue
-		printf '   %s ' "$module"
-		modprobe -q "$module" "$args" 2>&1 && printf 'OK\n'
+		printf '   %s: ' "$module"
+		modprobe "$module" "$args" 2>&1 && printf 'OK\n'
 	done
 fi
 
