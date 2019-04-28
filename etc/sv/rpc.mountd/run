@@ -7,15 +7,16 @@ exec 2>&1
 NAME=rpc.mountd
 DAEMON=$(command -v $NAME)
 [ -x "$DAEMON" ] || exit
+
+# See if the kernel supports NFSD
+if ! grep -qs '\snfsd$' /proc/filesystems; then
+	printf '%s ERROR: kernel does not support NFSD.\n' "$NAME"
+	exit
+fi
+
 EXPORTFS=$(command -v exportfs)
 [ -x "$EXPORTFS" ] || exit
 sv start rpcbind >/dev/null || exit
-
-# See if our running kernel supports NFSD
-if ! grep -qs '\snfsd$' /proc/filesystems; then
-	printf 'No NFSD support in current kernel.\n'
-	exit
-fi
 
 # Load config
 [ -r /etc/default/nfs-common ] && . /etc/default/nfs-common

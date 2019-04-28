@@ -4,7 +4,7 @@
 
 printf '=> Service activation:\n'
 
-# NFS support
+# NFS client userspace service
 printf '   NFS client: '
 if [ -x "$(command -v rpcbind)" ]; then
 	printf 'ACTIVATE'
@@ -15,8 +15,12 @@ else
 fi
 [ $? -ne 0 ] && printf ' FAILED: %s' "$RET"
 printf '\n'
+
+# NFS server
+# enable only if kernel supports NFSD and userspace binaries are available
 printf '   NFS server: '
-if [ -x "$(command -v rpc.mountd)" ] && [ -x "$(command -v exportfs)" ]; then
+if grep -qs '\snfsd$' /proc/filesystems && \
+   [ -x "$(command -v rpc.mountd)" ] && [ -x "$(command -v exportfs)" ]; then
 	printf 'ACTIVATE'
 	RET=$(svactivate rpc.mountd 2>&1)
 else

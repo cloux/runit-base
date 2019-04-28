@@ -5,9 +5,13 @@ exec 2>&1
 DAEMON=$(command -v ntpd)
 [ -x "$DAEMON" ] || exit
 
-[ -r /etc/default/ntp ] && . /etc/default/ntp
-[ -e /run/ntp.conf.dhcp ] && NTPD_OPTS="$NTPD_OPTS -c /run/ntp.conf.dhcp"
-NTPD_OPTS="$NTPD_OPTS -n -u ntp:ntp"
+# support for both ntp and ntpsec
+MODE=ntp
+$DAEMON --version | grep -q ntpsec && MODE=ntpsec
+[ -r /etc/default/$MODE ] && . /etc/default/$MODE
+[ "$IGNORE_DHCP" != "yes" ] && [ -e /run/$MODE.conf.dhcp ] && \
+ NTPD_OPTS="$NTPD_OPTS -c /run/$MODE.conf.dhcp"
+NTPD_OPTS="$NTPD_OPTS -n -u $MODE:$MODE"
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv
 NAME=${PWD##*/}
@@ -16,9 +20,7 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
-# create ntpsec log directory
-if $DAEMON --version | grep -q ntpsec; then
-	mkdir /var/log/ntpsec 2>/dev/null && chown ntp: /var/log/ntpsec 2>/dev/null
-fi
+# kill unsupervised instance
+killall --quiet --exact ntpd
 
 exec $DAEMON $NTPD_OPTS
