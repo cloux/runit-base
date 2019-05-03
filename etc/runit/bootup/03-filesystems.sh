@@ -69,8 +69,8 @@ if [ -f /zerofree ] || grep -q zerofree /proc/cmdline; then
 			mount -o remount,ro / 2>&1 && MOUNT_RW=0
 		fi
 		if zerofree -v /dev/root; then
+			mount -o remount,rw / && rm -f /zerofree && mount -o remount,ro
 			printf '=> Finished. You can shutdown, or wait 60 sec to continue boot...\n'
-			mount -o remount,rw / && rm -f /zerofree
 			sleep 60
 		fi
 	else
