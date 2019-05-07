@@ -15,6 +15,11 @@ else
 	touch /var/lib/random-seed
 fi
 
+if [ "$(command -v update-binfmts)" ]; then
+	printf '=> Enabling executable binary formats ...\n'
+	update-binfmts --enable
+fi
+
 printf '=> Setting up loopback interface ...\n'
 ip link set up dev lo
 

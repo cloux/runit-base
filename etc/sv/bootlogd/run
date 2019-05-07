@@ -11,6 +11,7 @@ DAEMON=$(command -v "$NAME")
 # ensure the logfile exists, so an instance running without -c
 # parameter can write the logfile
 touch "$LOGFILE"
+sync "$LOGFILE"
 # stop any bootlog daemons running outside of runsvdir
 killall --quiet --exact "$NAME"
 
