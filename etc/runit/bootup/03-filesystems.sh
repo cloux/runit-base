@@ -70,8 +70,8 @@ if [ -f /zerofree ] || grep -q zerofree /proc/cmdline; then
 		fi
 		if zerofree -v /dev/root; then
 			mount -o remount,rw / && rm -f /zerofree && mount -o remount,ro
-			printf '=> Finished. You can shutdown, or wait 60 sec to continue boot...\n'
-			sleep 60
+			printf '=> Finished. You can shutdown, or press Enter to continue boot...\n'
+			read x
 		fi
 	else
 		printf '=> Zero FAILED: zerofree command not found\n'
