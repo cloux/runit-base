@@ -32,5 +32,5 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 exec "$DAEMON" -f "$CONFIG" $EXTRAOPTS 2>/dev/null

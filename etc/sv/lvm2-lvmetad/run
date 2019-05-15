@@ -8,6 +8,6 @@ DAEMON=$(command -v $NAME)
 [ -x "$DAEMON" ] || exit
 
 # stop any unsupervised daemons
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 
 exec "$DAEMON" -f -l error >/dev/null 2>/dev/null

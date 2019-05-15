@@ -13,7 +13,7 @@ DAEMON=$(command -v "$NAME")
 touch "$LOGFILE"
 sync "$LOGFILE"
 # stop any bootlog daemons running outside of runsvdir
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv
 if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then

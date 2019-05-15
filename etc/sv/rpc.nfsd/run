@@ -19,7 +19,7 @@ RPCNFSDPRIORITY=0
 [ -r ./conf ] && . ./conf
 
 # Terminate other instances
-killall -9 --quiet --exact nfsd
+pkill -9 -f "$DAEMON"
 
 # Run nfsd kernel service. Doesn't have a foreground mode.
 nice -n $RPCNFSDPRIORITY "$DAEMON" -- $RPCNFSDCOUNT >/dev/null

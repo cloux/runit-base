@@ -36,7 +36,7 @@ sv check rpc.nfsd >/dev/null || exit
 "$EXPORTFS" -r
 
 # Terminate unsupervised instance
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 
 # Run mountd
 exec "$DAEMON" --foreground $RPCMOUNTDOPTS 2>/dev/null

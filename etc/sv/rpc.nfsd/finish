@@ -1,4 +1,3 @@
 #!/bin/sh
 # kill all running nfsd instances
-
 killall -9 --quiet --exact nfsd

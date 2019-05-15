@@ -22,7 +22,7 @@ fi
 [ -f "$CONFIG" ] && sed -i 's/^\s*daemonize\s*y.*/daemonize no/g' $CONFIG
 
 # end all other unsupervised processes
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 [ "$(pgrep $NAME)" ] && exit
 
 exec chpst -u redis $DAEMON $CONFIG

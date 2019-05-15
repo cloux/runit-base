@@ -21,6 +21,6 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 fi
 
 # kill unsupervised instance
-killall --quiet --exact ntpd
+pkill -f "$DAEMON"
 
 exec $DAEMON $NTPD_OPTS

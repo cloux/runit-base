@@ -1,2 +1,3 @@
 #!/bin/sh
-killall --quiet hiawatha
+pkill -f "$(command -v hiawatha)"
+exit 0

@@ -10,7 +10,7 @@ DAEMON="$(command -v $NAME)"
 [ -x "$DAEMON" ] || exit
 
 # end all other unsupervised processes
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 [ "$(pgrep $NAME)" ] && exit
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv

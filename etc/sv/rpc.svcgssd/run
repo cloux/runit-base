@@ -9,6 +9,6 @@ DAEMON=$(command -v $NAME)
 [ -x "$DAEMON" ] || exit
 
 # Terminate unsupervised instance
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 
 exec "$DAEMON" -f

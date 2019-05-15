@@ -15,6 +15,6 @@ fi
 
 # stop daemon running outside of runsvdir
 "$DAEMON" --exit 2>/dev/null
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 
 exec "$DAEMON" --nobackground --master --lastlease --quiet 2>/dev/null

@@ -8,7 +8,7 @@ DAEMON=$(command -v $NAME)
 [ -x "$DAEMON" ] || exit
 
 # stop any unsupervised daemons
-killall --quiet --exact "$NAME"
+pkill -f "$DAEMON"
 
 [ -d /run/lvm ] || mkdir -m 0700 /run/lvm
 
