@@ -1,3 +1,10 @@
 #!/bin/sh
+# vsftpd - Very Secure FTP Daemon
+#
 exec 2>&1
-exec chpst -u ftp:ftp vsftpd
+
+NAME=${PWD##*/}
+DAEMON=$(command -v $NAME)
+[ -x "$DAEMON" ] || exit
+
+exec "$DAEMON" -olisten=YES
