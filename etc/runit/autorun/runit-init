@@ -19,7 +19,7 @@ CMDPATH=/sbin
 apply_runit_cmd insserv runlevel shutdown
 
 CMDPATH=/usr/sbin
-apply_runit_cmd start-statd update-rc.d
+apply_runit_cmd invoke-rc.d start-statd update-rc.d
 
 CMDPATH=/bin
 apply_runit_cmd pidof
