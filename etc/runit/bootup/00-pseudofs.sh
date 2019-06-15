@@ -28,11 +28,11 @@ grep -q lxc /proc/self/environ >/dev/null && export VIRTUALIZATION=1
 if [ -z "$VIRTUALIZATION" ]; then
 	if ! mountpoint -q /sys/fs/cgroup; then
 		mkdir -p -m0755 /sys/fs/cgroup
-		# try to mount cgroup2 single hierarchy
-		if ! mount -t cgroup2 cgroup2 /sys/fs/cgroup; then
-			# fallback to cgroup v1
-			mount -o mode=0755 -t tmpfs cgroup /sys/fs/cgroup
-			awk '$4 == 1 { system("mountpoint -q /sys/fs/cgroup/" $1 " || { mkdir -p /sys/fs/cgroup/" $1 " && mount -t cgroup -o " $1 " cgroup /sys/fs/cgroup/" $1 " ;}" ) }' /proc/cgroups
-		fi
+		# try to mount cgroup2 single hierarchy, fallback to cgroup v1
+		mount -t cgroup2 cgroup2 /sys/fs/cgroup || mount -o mode=0755 -t tmpfs cgroup /sys/fs/cgroup
+		# add cgroup v1 hierarchy
+		for cg in $(grep '1$' /proc/cgroups 2>/dev/null | cut -f 1); do
+			mkdir /sys/fs/cgroup/$cg && mount -t cgroup -o $cg cgroup /sys/fs/cgroup/$cg
+		done
 	fi
 fi
