@@ -12,6 +12,8 @@ mountpoint -q /sys/kernel/security || mount -t securityfs securityfs /sys/kernel
 mountpoint -q /dev || mount -o mode=0755,nosuid -t devtmpfs dev /dev
 mkdir -p -m0755 /dev/pts
 mountpoint -q /dev/pts || mount -o mode=0620,gid=5,nosuid,noexec -n -t devpts devpts /dev/pts
+mkdir -p -m0755 /dev/mqueue
+mountpoint -q /dev/mqueue || mount -t mqueue mqueue /dev/mqueue 2>/dev/null
 mountpoint -q /run || mount -o mode=0755,nosuid,nodev -t tmpfs run /run
 mkdir -p -m0755 /run/shm /run/lvm /run/user /run/lock /run/log /run/rpc_pipefs
 mountpoint -q /run/shm || mount -o mode=1777,nosuid,nodev -n -t tmpfs shm /run/shm
@@ -24,6 +26,13 @@ ln -sf /run/shm /dev/shm
 grep -q lxc /proc/self/environ >/dev/null && export VIRTUALIZATION=1
 
 if [ -z "$VIRTUALIZATION" ]; then
-	mountpoint -q /sys/fs/cgroup || mount -o mode=0755 -t tmpfs cgroup /sys/fs/cgroup
-	awk '$4 == 1 { system("mountpoint -q /sys/fs/cgroup/" $1 " || { mkdir -p /sys/fs/cgroup/" $1 " && mount -t cgroup -o " $1 " cgroup /sys/fs/cgroup/" $1 " ;}" ) }' /proc/cgroups
+	if ! mountpoint -q /sys/fs/cgroup; then
+		mkdir -p -m0755 /sys/fs/cgroup
+		# try to mount cgroup2 single hierarchy
+		if ! mount -t cgroup2 cgroup2 /sys/fs/cgroup; then
+			# fallback to cgroup v1
+			mount -o mode=0755 -t tmpfs cgroup /sys/fs/cgroup
+			awk '$4 == 1 { system("mountpoint -q /sys/fs/cgroup/" $1 " || { mkdir -p /sys/fs/cgroup/" $1 " && mount -t cgroup -o " $1 " cgroup /sys/fs/cgroup/" $1 " ;}" ) }' /proc/cgroups
+		fi
+	fi
 fi
