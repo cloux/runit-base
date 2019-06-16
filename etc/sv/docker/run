@@ -1,0 +1,30 @@
+#!/bin/sh
+# Docker - Create self-sufficient containers
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON=$(command -v dockerd)
+[ -x "$DAEMON" ] || exit
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+# stop daemon running outside of runsvdir
+pkill -f "$DAEMON"
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# set system limits
+ulimit -n 1048576
+if [ "$BASH" ]; then
+	ulimit -u unlimited
+else
+  ulimit -p unlimited
+fi
+
+exec "$DAEMON" $DOCKER_OPTS 2>&1
