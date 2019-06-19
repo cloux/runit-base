@@ -18,6 +18,7 @@ pkill -f "$DAEMON"
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
+[ -r ./conf ] && . ./conf
 
 # set system limits
 ulimit -n 1048576
@@ -27,4 +28,4 @@ else
   ulimit -p unlimited
 fi
 
-exec "$DAEMON" $DOCKER_OPTS 2>&1
+exec "$DAEMON" -H unix:///run/docker.sock $DOCKER_OPTS 2>&1

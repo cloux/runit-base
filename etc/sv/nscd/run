@@ -9,7 +9,9 @@ DAEMON="$(command -v $NAME)"
 [ -x "$DAEMON" ] || exit
 
 THREADS=$(nproc)
+CONFIG_FILE="/etc/nscd.conf"
 [ -r ./conf ] && . ./conf
+mkdir /run/nscd 2>/dev/null
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv
 if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
@@ -18,4 +20,4 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 fi
 
 "$DAEMON" --shutdown
-exec "$DAEMON" --foreground --nthreads=$THREADS 2>/dev/null
+exec "$DAEMON" -F -f "$CONFIG_FILE" -t $THREADS 2>/dev/null
