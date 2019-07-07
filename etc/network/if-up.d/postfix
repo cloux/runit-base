@@ -20,7 +20,7 @@ if [ ! -x /sbin/resolvconf ]; then
 	f=/etc/resolv.conf
 	cp $f $(postconf -hx queue_directory)$f 2>/dev/null || exit
 	if [ "$(pgrep runsvdir)" ]; then
-		sv reload postfix >/dev/null 2>/dev/null || true
+		sv reload postfix >/dev/null || true
 	elif [ -n "$RUNNING" ]; then
 		service postfix reload >/dev/null 2>&1
 	fi

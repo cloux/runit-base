@@ -15,7 +15,7 @@ apply_runit_cmd() {
 		fi
 	done
 }
-CMDPATH=/sbin 
+CMDPATH=/sbin
 apply_runit_cmd insserv runlevel shutdown
 
 CMDPATH=/usr/sbin

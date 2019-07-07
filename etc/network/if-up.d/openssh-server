@@ -16,7 +16,7 @@
 [ -e /usr/sbin/sshd ] || exit
 
 if [ "$(pgrep runsvdir)" ] && [ -f /etc/service/ssh ]; then
-  sv restart ssh >/dev/null 2>/dev/null
+  sv restart ssh >/dev/null
 elif [ ! -f /etc/service/ssh ]; then
   ([ ! -f /run/sshd.pid ] || [ "$(ps -p "$(cat /run/sshd.pid)" -o comm=)" != sshd ]) && exit
   # We'd like to use 'reload' here, but it has some problems; see #502444.

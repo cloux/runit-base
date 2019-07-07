@@ -1,0 +1,36 @@
+#!/bin/sh
+# DHCP server and DNS forwarder
+#
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+# load configuration
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+[ -r ./conf ] && . ./conf
+DNSMASQ_OPTS="$DNSMASQ_OPTS --local-service"
+ROOT_DS="/usr/share/dns/root.ds"
+[ -f $ROOT_DS ] && DNSMASQ_OPTS="$DNSMASQ_OPTS $(env LC_ALL=C sed -rne "s/^([.a-zA-Z0-9]+)([[:space:]]+[0-9]+)*([[:space:]]+IN)*[[:space:]]+DS[[:space:]]+/--trust-anchor=\1,/;s/[[:space:]]+/,/gp" $ROOT_DS | tr '\n' ' ')"
+[ -z "$DNSMASQ_USER" ] && DNSMASQ_USER="dnsmasq"
+[ -d /run/dnsmasq ] || install -m 0755 -o "$DNSMASQ_USER" -g nogroup -d /run/dnsmasq
+[ -z "$RESOLV_CONF" ] && [ "$IGNORE_RESOLVCONF" != "yes" ] && \
+  [ "$(command -v resolvconf)" ] && RESOLV_CONF=/run/dnsmasq/resolv.conf
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec "$DAEMON" --keep-in-foreground \
+${DNSMASQ_USER:+ -u $DNSMASQ_USER} \
+${DNSMASQ_INTERFACES:+ $DNSMASQ_INTERFACES} \
+${DHCP_LEASE:+ -l $DHCP_LEASE} \
+${DOMAIN_SUFFIX:+ -s $DOMAIN_SUFFIX} \
+${RESOLV_CONF:+ -r $RESOLV_CONF} \
+${CACHESIZE:+ -c $CACHESIZE} \
+${CONFIG_DIR:+ -7 $CONFIG_DIR} \
+${DNSMASQ_OPTS:+ $DNSMASQ_OPTS} 2>&1
