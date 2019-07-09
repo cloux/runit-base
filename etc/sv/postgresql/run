@@ -25,4 +25,4 @@ PGBINROOT="/usr/lib/postgresql/"
 [ -z "$NAME" ] && NAME=$(ls -1tr /etc/postgresql/$VERSION | tail -n 1)
 
 install -d -m 2775 -o postgres -g postgres -d /run/postgresql
-exec chpst -u postgres $DAEMON --foreground --skip-systemctl-redirect $VERSION $NAME start -- $OPTIONS
+exec $DAEMON --foreground --skip-systemctl-redirect $VERSION $NAME start -- $OPTIONS
