@@ -24,6 +24,7 @@ fi
 
 printf '=> Waiting for services to stop...\n'
 printf '=> Further messages will not be logged to disk\n'
+pkill -f 'runsvdir.*/etc/service'
 sv -w 5 force-stop /etc/service/*
 sv exit /etc/service/*
 
