@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Control different infrared receivers and transceivers
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+[ -d "/run/lirc" ] || mkdir -p /run/lirc
+[ ! -f /etc/lirc/lirc_options.conf ] && [ -f /etc/lirc/lirc_options.conf.dist ] &&
+  cp -f /etc/lirc/lirc_options.conf.dist /etc/lirc/lirc_options.conf
+
+exec "$DAEMON" --nodaemon
