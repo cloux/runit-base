@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# exit bootlogd shortly after boot
+#
+
+# do not kill bootlogd if supervised
+[ -d /etc/service/bootlogd ] && exit
+
+sleep 5
+touch /var/log/boot.log || exit
+sleep 1
+pkill -f /sbin/bootlogd

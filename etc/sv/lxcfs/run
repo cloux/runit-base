@@ -1,0 +1,21 @@
+#!/bin/sh
+# FUSE filesystem for LXC
+#
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=lxcfs
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+# don't start if bind-mounted from host
+[ -d /var/lib/lxcfs/proc ] && exit
+
+# stop any daemons running outside of runsvdir
+pkill -f "$DAEMON"
+
+# cleanup in case of crash
+mountpoint -q /var/lib/lxcfs && fusermount -u /var/lib/lxcfs 2>/dev/null
+[ -L /etc/mtab ] || sed -i '/^lxcfs \/var\/lib\/lxcfs fuse.lxcfs/d' /etc/mtab
+
+exec "$DAEMON" /var/lib/lxcfs >/dev/null 2>/dev/null

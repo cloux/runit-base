@@ -8,7 +8,7 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin
 BOOTSTART=$(date +%s.%N)
 
 # copy /dev/console messages to a logfile
-if [ -e /etc/service/bootlogd ] && [ -x /sbin/bootlogd ]; then
+if [ -x /sbin/bootlogd ] && [ ! -f /etc/sv/bootlogd/down ]; then
 	mountpoint -q /dev || mount -o mode=0755,nosuid -t devtmpfs dev /dev
 	[ -e /dev/console ] || mknod -m 600 /dev/console c 5 1
 	[ -d /dev/pts ] || mkdir -m0755 /dev/pts
