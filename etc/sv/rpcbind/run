@@ -27,13 +27,13 @@ fi
 #
 # GSSD is required for Kerberos mounts
 if [ "$NEED_GSSD" = "yes" ] && [ -x "$(command -v rpc.gssd)" ]; then
-	svactivate rpc.gssd >/dev/null
+	svactivate rpc.gssd >/dev/null && sv up rpc.gssd
 else
 	svdeactivate rpc.gssd >/dev/null
 fi
 # STATD is only needed for NFSv2 and NFSv3
 if [ "$NEED_STATD" = "yes" ] && [ -x "$(command -v rpc.statd)" ]; then
-	svactivate rpc.statd >/dev/null
+	svactivate rpc.statd >/dev/null && sv up rpc.statd
 else
 	svdeactivate rpc.statd >/dev/null
 fi
@@ -44,11 +44,14 @@ if [ "$NEED_IDMAPD" = "no" ]; then
 	svdeactivate rpc.idmapd >/dev/null
 elif ([ "$NEED_IDMAPD" = "yes" ] || ! nfsidmap -d >/dev/null 2>/dev/null) && \
       [ -x "$(command -v rpc.idmapd)" ]; then
-	svactivate rpc.idmapd >/dev/null
+	svactivate rpc.idmapd >/dev/null && sv up rpc.idmapd
 else
 	# make sure service goes up again, if activated by rpc.mountd
 	sv up rpc.idmapd >/dev/null
 fi
+
+# start rpc.mountd, rpcbind finish might have stopped it
+[ -e /etc/service/rpc.mountd ] && sv up rpc.mountd
 
 # Terminate unsupervised instance
 pkill -f "$DAEMON"
