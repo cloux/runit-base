@@ -1,0 +1,25 @@
+#!/bin/sh
+# etcd - highly-available key value store
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON=$(command -v $NAME)
+[ -x "$DAEMON" ] || exit
+
+# etcd is configured with environment variables, 'set -a' makes them visible
+set -a
+ETCD_NAME="$(hostname)"
+ETCD_DATA_DIR="/var/lib/etcd/default"
+DAEMON_ARGS="--log-output stdout"
+[ -r ./conf ] && . ./conf
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+set +a
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+  mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+  ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec chpst -u $NAME $DAEMON $DAEMON_ARGS 2>/dev/null
