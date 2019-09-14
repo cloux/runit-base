@@ -5,8 +5,8 @@
 # (cloux@rote.ch)
 exec 2>&1
 
-NAME=oomd_bin
-DAEMON=$(command -v $NAME)
+DAEMON=$(command -v oomd)
+[ "$DAEMON" ] || DAEMON=$(command -v oomd_bin)
 [ -x "$DAEMON" ] || exit
 
 exec "$DAEMON" 2>&1
