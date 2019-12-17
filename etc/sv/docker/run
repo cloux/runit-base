@@ -25,7 +25,7 @@ ulimit -n 1048576
 if [ "$BASH" ]; then
 	ulimit -u unlimited
 else
-  ulimit -p unlimited
+	ulimit -p unlimited
 fi
 
 exec "$DAEMON" -H unix:///run/docker.sock $DOCKER_OPTS 2>&1
