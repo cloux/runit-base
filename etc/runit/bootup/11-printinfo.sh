@@ -9,7 +9,7 @@
 printf '=> System info:\n'
 printf '   Time: %s\n' "$(date --iso-8601=seconds)"
 printf '   CPU: %s\n' "$(grep -i 'model name' /proc/cpuinfo | head -n 1 | sed 's/[^:]*:\s*//') ($(nproc --all) Cores)"
-printf '   RAM: %s GB\n' "$(($(grep '^MemTotal' /proc/meminfo | grep -o '[0-9]*')/1000000))"
+printf '   RAM: %s GB\n' "$((($(grep '^MemTotal' /proc/meminfo | grep -o '[0-9]*')+500000)/1000000))"
 
 LOCAL_IP="$(hostname -I 2>/dev/null)"
 if [ "$LOCAL_IP" ]; then
