@@ -1,0 +1,23 @@
+#!/bin/sh
+# minidlna, DLNA/UPnP-AV media server
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON=/usr/sbin/minidlnad
+[ -x "$DAEMON" ] || exit
+
+DAEMON_OPTS=""
+USER=minidlna
+CONFIGFILE=/etc/minidlna.conf
+[ -r ./conf ] && . ./conf
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+DAEMON_ARGS="-L -u $USER -f $CONFIGFILE $DAEMON_OPTS"
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+  mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+  ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec $DAEMON -S $DAEMON_ARGS 2>/dev/null
