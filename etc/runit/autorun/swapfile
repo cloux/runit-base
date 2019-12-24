@@ -35,15 +35,15 @@ if [ ! -f "$SWAPFILE" ]; then
 	RAMSIZE="$(grep -i '^MemTotal.*kB' /proc/meminfo | grep -o '[0-9]*')"
 	SWAPSIZE=$RAMSIZE
 	# limit swap size to 4GB
-	if printf '%s' "$SWAPSIZE" | grep -q '^[0-9][0-9]*$' && [ "$SWAPSIZE" -le 4194304 ]; then
+	if printf '%s' "$SWAPSIZE" | grep -q '^[0-9][0-9]*$' && [ "$SWAPSIZE" -ge 4194304 ]; then
 		SWAPSIZE=4194304
 	fi
 	FREESPACE="$(df --output=avail --block-size=K "$SWAP_PATH" | grep -o '[0-9]*')"
 	if [ $FREESPACE -ge $SWAPSIZE ]; then
 		printf 'Creating new swapfile: %s [%s kB] ...\n' "$SWAPFILE" "$SWAPSIZE"
 		dd if=/dev/zero of="$SWAPFILE" bs=1024 count=$SWAPSIZE
-		mkswap "$SWAPFILE"
 		chmod 0600 "$SWAPFILE"
+		mkswap "$SWAPFILE"
 	else
 		printf 'Error: swapfile cannot be created. Free= space in %s is %s kB, required minimum is %s.\n' \
 		"$SWAP_PATH" "$FREESPACE" "$SWAPSIZE"
