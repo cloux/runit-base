@@ -2,15 +2,8 @@
 #
 # Start LXC autoboot containers
 
-# wait for /var/lib/lxcfs mountpoint
-COUNT=0
-while true; do
-	mountpoint -q /var/lib/lxcfs && break
-	sleep 0.5
-	COUNT=$((COUNT+1))
-	[ $COUNT -gt 10 ] && break
-done
-mountpoint -q /var/lib/lxcfs || exit
-
 LXC="/usr/lib/x86_64-linux-gnu/lxc/lxc-containers"
-[ -x "$LXC" ] && $LXC start
+if [ -x "$LXC" ];
+	svactivate lxcfs
+	$LXC start
+fi
