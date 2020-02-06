@@ -35,5 +35,12 @@ fi
 # stop daemons running outside of runsvdir
 pkill -f "/pure-ftpd"
 
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+NAME=${PWD##*/}
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
 printf 'No\n' > $CONF_DIR/Daemonize
 exec $DAEMON $SUFFIX
