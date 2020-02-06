@@ -1,10 +1,18 @@
 #!/bin/sh
 # vsftpd - Very Secure FTP Daemon
-#
 exec 2>&1
 
 NAME=${PWD##*/}
-DAEMON=$(command -v $NAME)
+DAEMON="$(command -v $NAME)"
 [ -x "$DAEMON" ] || exit
+CONF=/etc/vsftpd.conf
+CHROOT="$(grep '^secure_chroot_dir' "$CONF" 2>/dev/null | grep -o '[^=]*$')"
+[ "$CHROOT" ] && [ ! -d "$CHROOT" ] && mkdir -p "$CHROOT"
 
-exec "$DAEMON" -olisten=YES
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec "$DAEMON" "$CONF" -olisten=YES

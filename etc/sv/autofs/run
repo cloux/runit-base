@@ -1,4 +1,16 @@
 #!/bin/sh
+# autofs - Service control for the automounter
 exec 2>&1
-[ -x /usr/sbin/automount ] || exit 0
-exec /usr/sbin/automount --foreground --verbose 2>&1
+
+DAEMON="$(command -v automount)"
+[ -x "$DAEMON" ] || exit
+[ -r /etc/default/autofs ] && . /etc/default/autofs
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+NAME=${PWD##*/}
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec "$DAEMON" --foreground --verbose $OPTIONS 2>&1

@@ -1,3 +1,18 @@
 #!/bin/sh
+# proftpd - secure file transfer protocol server
 exec 2>&1
-exec proftpd -n -d 1
+
+NAME=${PWD##*/}
+DAEMON=$(command -v "$NAME")
+[ -x "$DAEMON" ] || exit
+
+CONFIG_FILE=/etc/proftpd/proftpd.conf
+[ -r /etc/default/proftpd ] && . /etc/default/proftpd
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec "$DAEMON" -n -c "$CONFIG_FILE" $OPTIONS

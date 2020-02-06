@@ -1,9 +1,11 @@
 #!/bin/sh
 
 # load config files
-[ -r /etc/default/auditd ] && . /etc/default/auditd
 [ -r ./conf ] && . ./conf
+[ -r /etc/default/auditd ] && . /etc/default/auditd
 
-if [ -z "$(printf '%s' "$AUDITD_CLEAN_STOP" | grep -i 'no')" ]; then
-  [ -f /etc/audit/audit-stop.rules ] && /sbin/auditctl -R /etc/audit/audit-stop.rules 2>/dev/null >/dev/null
+rm -f /var/run/audit_events
+
+if ! printf '%s' "$AUDITD_CLEAN_STOP" | grep -i 'no'; then
+  [ -f /etc/audit/audit-stop.rules ] && /sbin/auditctl -R /etc/audit/audit-stop.rules >/dev/null
 fi

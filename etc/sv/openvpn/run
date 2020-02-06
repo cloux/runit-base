@@ -46,4 +46,11 @@ if [ -z "$(iptables -t nat -L POSTROUTING | grep MASQUERADE)" ]; then
 	done
 fi
 
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+NAME=${PWD##*/}
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
 exec $DAEMON $OPTARGS --cd /etc/openvpn --config $CONFIG_FILE

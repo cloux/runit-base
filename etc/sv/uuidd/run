@@ -1,16 +1,21 @@
 #!/bin/sh
+# UUID generation daemon
 exec 2>&1
 
-DAEMON=/usr/sbin/uuidd
+NAME=${PWD##*/}
+DAEMON=$(command -v "$NAME")
+[ -x "$DAEMON" ] || exit
+
 UUIDD_USER=uuidd
 UUIDD_GROUP=uuidd
 UUIDD_DIR=/run/uuidd
-
-[ -x "$DAEMON" ] || exit 0
 [ -r ./conf ] && . ./conf
+[ -d "$UUIDD_DIR" ] || install -o "$UUIDD_USER" -g "$UUIDD_GROUP" -d "$UUIDD_DIR"
 
-if [ ! -d $UUIDD_DIR ]; then
-	install --group="$UUIDD_GROUP" --owner="$UUIDD_USER" -d "$UUIDD_DIR"
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
-exec $DAEMON --no-fork --no-pid --quiet
+exec "$DAEMON" --no-fork --no-pid --quiet 2>/dev/null

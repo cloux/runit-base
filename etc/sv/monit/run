@@ -1,16 +1,24 @@
 #!/bin/sh
 #
-# Monit utility for monitoring services on a Unix system
+# Monit - service and resource monitoring daemon
 #
-# Default config file: ~/.monitrc, /etc/monitrc
-# To check for syntax errors, run: monit -t
 exec 2>&1
 
-NAME=monit
+NAME=${PWD##*/}
 DAEMON=$(command -v "$NAME")
-[ -x "$DAEMON" ] || exit 0
+[ -x "$DAEMON" ] || exit
+CONFIG=/etc/monit/monitrc
+[ -f "/etc/default/$NAME" ] && . /etc/default/$NAME
+printf '%s' "$MONIT_OPTS" | grep -q '-c ' ||
+	MONIT_OPTS="-c $CONFIG $MONIT_OPTS"
 
 # kill all monit background daemons, if any
 "$DAEMON" quit >/dev/null 2>/dev/null
 
-exec "$DAEMON" -I
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec "$DAEMON" -I -B $MONIT_OPTS 2>/dev/null
