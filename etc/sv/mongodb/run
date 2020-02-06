@@ -1,0 +1,33 @@
+#!/bin/sh
+# MongoDB server
+exec 2>&1
+
+DAEMON="$(command -v mongod)"
+[ -x "$DAEMON" ] || exit
+NAME=${PWD##*/}
+DAEMONUSER=mongodb
+CONFIG=/etc/mongodb.conf
+[ -r ./conf ] && . ./conf
+[ -f /etc/default/$NAME ] && . /etc/default/$NAME
+printf '%s' "$DAEMON_OPTS" | grep -qE '(--config |-f )' ||
+	DAEMON_OPTS="--config $CONFIG $DAEMON_OPTS"
+
+# fix logfile ownership
+LOGFILE="$(grep '^logpath' "$CONFIG" 2>/dev/null | head -n 1 | grep -o '[^=]*$')"
+if [ "$LOGFILE" ]; then
+	LOGDIR="${LOGFILE%/*}"
+	[ -d "$LOGDIR" ] || install -o $DAEMONUSER -g $DAEMONUSER -d "$LOGDIR"
+	touch "$LOGFILE" && chown $DAEMONUSER: "$LOGFILE"
+fi
+
+# Transparent Huge Pages would create latency and memory usage issues
+[ -f /sys/kernel/mm/transparent_hugepage/enabled ] &&
+  printf 'never' >/sys/kernel/mm/transparent_hugepage/enabled
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec chpst -u "$DAEMONUSER" "$DAEMON" $DAEMON_OPTS 2>/dev/null
