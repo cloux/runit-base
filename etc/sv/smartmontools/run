@@ -1,0 +1,22 @@
+#!/bin/sh
+# SMART Disk Monitoring Daemon
+exec 2>&1
+
+DAEMON="$(command -v smartd)"
+[ -x "$DAEMON" ] || exit
+[ -r /etc/default/smartmontools ] && . /etc/default/smartmontools
+
+# Enable SMART
+SMARTCTL="$(command -v smartctl)"
+for device in $enable_smart; do
+	$SMARTCTL --quietmode=silent --smart=on $device
+done
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+NAME=${PWD##*/}
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec "$DAEMON" --no-fork $smartd_opts 2>/dev/null
