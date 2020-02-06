@@ -9,4 +9,9 @@ DAEMON=$(command -v oomd)
 [ "$DAEMON" ] || DAEMON=$(command -v oomd_bin)
 [ -x "$DAEMON" ] || exit
 
-exec "$DAEMON" 2>&1
+CONFIG=/etc/oomd.json
+[ -f "$CONFIG" ] || CONFIG=/etc/oomd/oomd.json
+[ -f "$CONFIG" ] || CONFIG=/usr/local/etc/oomd/oomd.json
+[ -f "$CONFIG" ] || exit
+
+exec "$DAEMON" --config "$CONFIG" 2>&1
