@@ -9,6 +9,7 @@ DAEMON="$(command -v $NAME)"
 [ -x "$DAEMON" ] || exit
 
 [ -r ./conf ] && . ./conf
+[ -r /etc/default/acpid ] && . /etc/default/acpid
 sv start socklog >/dev/null
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv
@@ -17,4 +18,4 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
-exec "$DAEMON" -f ${OPTS:=-l} >/dev/null 2>/dev/null
+exec "$DAEMON" -f $OPTIONS >/dev/null 2>/dev/null
