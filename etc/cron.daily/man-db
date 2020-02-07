@@ -2,6 +2,9 @@
 #
 # man-db cron daily
 
+# Skip in favour of systemd timer.
+[ -d /run/systemd/system ] && exit 0
+
 # run only if can be started nicely
 [ "$(command -v ionice)" ] || exit 1
 
@@ -12,17 +15,16 @@ if ! egrep -q '(envID|VxID):.*[1-9]' /proc/self/status && \
     iosched=3
 fi
 
+# Recover from deletion, per FHS.
 if ! [ -d /var/cache/man ]; then
-    # Recover from deletion, per FHS.
-    install -d -o man -g man -m 0755 /var/cache/man
+  install -d -o man -g man -m 0755 /var/cache/man
 fi
 
-if [ ! -d /run/systemd/system ] && [ -d /var/cache/man ]; then
-  ionice --class $iosched --ignore find /var/cache/man -type f -name '*.gz' -atime +6 -delete >/dev/null 2>/dev/null
-fi
+# expunge old catman pages which have not been read in a week
+ionice --class $iosched --ignore find /var/cache/man -type f -name '*.gz' \
+-atime +6 -delete >/dev/null 2>/dev/null
 
 # NOTE: do not start as a daemon, for compatibility with other-than-sysvinit init systems
 # regenerate man database
-if [ -x /usr/bin/mandb ]; then
-  ionice --class $iosched --ignore /usr/bin/mandb --quiet >/dev/null 2>/dev/null
-fi
+[ -x /usr/bin/mandb ] &&
+  ionice --class $iosched --ignore /usr/bin/mandb --quiet 2>/dev/null
