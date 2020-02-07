@@ -70,5 +70,3 @@ if [ -z "$VIRTUALIZATION" ]; then
 		# not reached when kexec was successful.
 	fi
 fi
-
-printf '=> Triggering reboot...\n'
