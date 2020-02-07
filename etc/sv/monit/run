@@ -9,7 +9,7 @@ DAEMON=$(command -v "$NAME")
 [ -x "$DAEMON" ] || exit
 CONFIG=/etc/monit/monitrc
 [ -f "/etc/default/$NAME" ] && . /etc/default/$NAME
-printf '%s' "$MONIT_OPTS" | grep -q '-c ' ||
+printf '%s' "$MONIT_OPTS" | grep -q '\-c ' ||
 	MONIT_OPTS="-c $CONFIG $MONIT_OPTS"
 
 # kill all monit background daemons, if any
