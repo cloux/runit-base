@@ -33,7 +33,7 @@ INSTANCE_ID="$(/usr/local/bin/ec2-metadata --instance-id 2>/dev/null | grep -io 
 SWAPFILE="$SWAP_PATH/$INSTANCE_ID.swap"
 if [ ! -f "$SWAPFILE" ]; then
 	RAMSIZE="$(grep -i '^MemTotal.*kB' /proc/meminfo | grep -o '[0-9]*')"
-	SWAPSIZE=$RAMSIZE
+	SWAPSIZE=$((RAMSIZE/4))
 	# limit swap size to 4GB
 	if printf '%s' "$SWAPSIZE" | grep -q '^[0-9][0-9]*$' && [ "$SWAPSIZE" -ge 4194304 ]; then
 		SWAPSIZE=4194304
