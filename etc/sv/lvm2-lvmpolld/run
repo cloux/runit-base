@@ -3,13 +3,19 @@
 # (cloux@rote.ch)
 exec 2>&1
 
-NAME=lvmpolld
-DAEMON=$(command -v $NAME)
+DAEMON=$(command -v lvmpolld)
 [ -x "$DAEMON" ] || exit
 
 # stop any unsupervised daemons
 pkill -f "$DAEMON"
 
 [ -d /run/lvm ] || mkdir -m 0700 /run/lvm
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+NAME=${PWD##*/}
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
 
 exec "$DAEMON" -f -l wire >/dev/null 2>/dev/null
