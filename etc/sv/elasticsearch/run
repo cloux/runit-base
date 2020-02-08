@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Cloud based search engine
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+ES_HOME=/usr/share/$NAME
+DAEMON=$ES_HOME/bin/elasticsearch
+[ -x "$DAEMON" ] || exit
+
+# environment variables
+DAEMON_OPTS="--quiet"
+JAVA_HOME=$ES_HOME/jdk
+ES_PATH_CONF=/etc/$NAME
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+export JAVA_HOME
+export ES_JAVA_OPTS
+export ES_PATH_CONF
+export ES_SD_NOTIFY=false
+
+# system limits
+[ "$MAX_OPEN_FILES" ] && ulimit -n $MAX_OPEN_FILES
+[ "$MAX_LOCKED_MEMORY" ] && ulimit -l $MAX_LOCKED_MEMORY
+if [ "$MAX_MAP_COUNT" ] && [ -f /proc/sys/vm/max_map_count ]; then
+	[ "$MAX_MAP_COUNT" -gt "$(cat /proc/sys/vm/max_map_count)" ] &&
+	sysctl -q -w vm.max_map_count=$MAX_MAP_COUNT
+fi
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec chpst -u elasticsearch:elasticsearch "$DAEMON" $DAEMON_OPTS 2>/dev/null
