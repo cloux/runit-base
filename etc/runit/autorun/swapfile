@@ -12,9 +12,8 @@ if [ $(grep -ivc '^Filename' /proc/swaps 2>/dev/null) -ne 0 ]; then
 fi
 
 # default swapfile path
-SWAP_PATH=
+SWAP_PATH='/var/cache'
 [ -s /etc/default/swapfile ] && . /etc/default/swapfile
-[ "$SWAP_PATH" ] || exit
 if [ ! -d "$SWAP_PATH" ]; then
 	# wait for mount to finish after boot
 	sleep 5
