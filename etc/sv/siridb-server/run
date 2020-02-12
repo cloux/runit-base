@@ -1,0 +1,23 @@
+#!/bin/sh
+# SiriDB - Time series database server
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+CONFIG_FILE="/etc/siridb/siridb.conf"
+LOGLEVEL="info"
+[ -r ./conf ] && . ./conf
+
+# set hard limit for max-open-files
+MAX_OPEN_FILES=$(grep ^max_open_files "$CONFIG_FILE" 2>/dev/null | grep -o '[0-9]*$')
+if [ "$MAX_OPEN_FILES" ]; then
+	MAX_OPEN_FILES=$((MAX_OPEN_FILES*2))
+else
+	MAX_OPEN_FILES=65535
+fi
+[ "$(ulimit -Hn)" -lt $MAX_OPEN_FILES ] && ulimit -Hn $MAX_OPEN_FILES
+
+exec "$DAEMON" --config "$CONFIG_FILE" --log-level "$LOGLEVEL" 2>/dev/null
