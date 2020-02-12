@@ -9,7 +9,7 @@ DAEMON=$(command -v $NAME)
 # On single-CPU systems, irqbalabce has no effect and exits immediately.
 # Supervise it only on multi-CPU systems!
 if [ "$(nproc --all 2>/dev/null)" -eq 1 ]; then
-	sv exit $NAME
+	sv down $NAME
 	exit
 fi
 
