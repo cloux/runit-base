@@ -12,15 +12,14 @@ LOGUSER=daemon
 [ -r ./conf ] && . ./conf
 
 [ -f "$LOGDIR" ] && rm -f "$LOGDIR"
-[ ! -d "$LOGDIR" ] && mkdir -p "$LOGDIR"
+[ ! -d "$LOGDIR" ] && install -m 755 -o $LOGUSER -g $LOGUSER -d "$LOGDIR"
 
 # manage log config file
 # see https://gitlab.com/flussence/runit-scripts/blob/master/svlogd.run.sh
 if [ -f "$UPDIR"/log.config ]; then
-  install -Tm 0644 "$UPDIR"/log.config "$LOGDIR"/config
+  install -Tm 0644 -o $LOGUSER "$UPDIR"/log.config "$LOGDIR"/config
 elif [ -f "$PWD"/log.config ]; then
-  install -Tm 0644 "$PWD"/log.config "$LOGDIR"/config
+  install -Tm 0644 -o $LOGUSER "$PWD"/log.config "$LOGDIR"/config
 fi
 
-chown -R ${LOGUSER}: "$LOGDIR"
 exec chpst -u${LOGUSER} svlogd -tt -b $BUFFER "$LOGDIR"
