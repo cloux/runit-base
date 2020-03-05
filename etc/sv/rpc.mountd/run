@@ -26,6 +26,7 @@ sv start rpcbind >/dev/null || exit
 # NFSD is required
 mountpoint -q "/proc/fs/nfsd" || mount -t nfsd nfsd /proc/fs/nfsd
 svactivate rpc.nfsd >/dev/null
+sv start rpc.nfsd >/dev/null
 sv check rpc.nfsd >/dev/null || exit
 # SVCGSSD is only required for Kerberos exports
 [ "$NEED_SVCGSSD" = "yes" ] && [ -x "$(command -v rpc.svcgssd)" ]  && svactivate rpc.svcgssd >/dev/null
