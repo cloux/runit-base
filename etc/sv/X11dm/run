@@ -5,19 +5,20 @@ exec 2>&1
 
 NAME=${PWD##*/}
 
+# quit if boot requires text mode
 if grep -wqs text /proc/cmdline; then
 	printf 'Not starting display manager, found "text" in kernel commandline.\n'
 	sv stop "$NAME" >/dev/null
 	exit
 fi
 
+# find the X11 display manager
 DEFAULT_DISPLAY_MANAGER_FILE=/etc/X11/default-display-manager
 if [ ! -r "$DEFAULT_DISPLAY_MANAGER_FILE" ]; then
 	printf 'ERROR: %s display manager could not be determined, missing %s\n' "$NAME" "$DEFAULT_DISPLAY_MANAGER_FILE"
 	sv stop "$NAME" >/dev/null
 	exit
 fi
-
 DEFAULT_DISPLAY_MANAGER=$(head -n 1 "$DEFAULT_DISPLAY_MANAGER_FILE")
 if [ ! -x "$DEFAULT_DISPLAY_MANAGER" ]; then
 	printf 'ERROR: display manager "%s" can not be executed.\n' "$DEFAULT_DISPLAY_MANAGER"
@@ -28,9 +29,8 @@ fi
 # make sure login manager is up
 sv start elogind >/dev/null || exit
 
-if [ -r /etc/default/locale ]; then
-	. /etc/default/locale
-	export LANG LANGUAGE
-fi
+# export locale
+[ -r /etc/default/locale ] && . /etc/default/locale
+export LANG LANGUAGE
 
 exec "$DEFAULT_DISPLAY_MANAGER"
