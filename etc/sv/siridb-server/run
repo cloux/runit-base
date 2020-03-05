@@ -3,8 +3,7 @@
 # (cloux@rote.ch)
 exec 2>&1
 
-NAME=${PWD##*/}
-DAEMON="$(command -v $NAME)"
+DAEMON="$(command -v siridb-server)"
 [ -x "$DAEMON" ] || exit
 
 CONFIG_FILE="/etc/siridb/siridb.conf"
