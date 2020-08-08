@@ -1,0 +1,2 @@
+#!/bin/sh
+[ -x /sbin/resolvconf ] && /sbin/resolvconf -d lo.dnsmasq

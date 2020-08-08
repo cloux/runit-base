@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Daemon to access a smart card using PC/SC
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+# config variables
+IPCDIR=/var/run/pcscd
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+[ -d "$IPCDIR" ] || mkdir -m 0755 -p "$IPCDIR"
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+# stop other daemons
+pkill -f "$DAEMON"
+
+exec "$DAEMON" -f >/dev/null 2>/dev/null
