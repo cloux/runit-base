@@ -9,4 +9,4 @@
 sleep 5
 touch /var/log/boot.log || exit
 sleep 1
-pkill -f /sbin/bootlogd
+pkill bootlogd

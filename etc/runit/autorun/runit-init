@@ -27,13 +27,13 @@ apply_runit_cmd pidof
 # apply power control symlinks
 for CMD in halt poweroff; do
 	if [ "$(readlink -n /sbin/$CMD)" != "shutdown" ]; then
-		mv -f /sbin/$CMD /sbin/$CMD.sysv
+		mv -f /sbin/$CMD /sbin/$CMD.sysv 2>/dev/null
 		ln -sfv shutdown /sbin/$CMD
 	fi
 done
 for CMD in ctrlaltdel reboot; do
 	if [ "$(readlink -n /sbin/$CMD)" != "/etc/runit/ctrlaltdel" ]; then
-		mv -f /sbin/$CMD /sbin/$CMD.sysv
+		mv -f /sbin/$CMD /sbin/$CMD.sysv 2>/dev/null
 		ln -sfv /etc/runit/ctrlaltdel /sbin/$CMD
 	fi
 done
