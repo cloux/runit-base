@@ -1,1 +1,28 @@
-../../log/run
+#!/bin/sh
+exec 2>&1
+
+# Get service name (the upper directory name)
+UPDIR=$(dirname $PWD)
+SERVICE=${UPDIR##*/}
+LOGDIR=/var/log/$SERVICE
+BUFFER=2048
+LOGUSER=daemon
+
+# fix supervise symlink
+[ -h ./supervise ] && rm ./supervise && mkdir -m 700 supervise
+
+# Read configuration file
+[ -r ./conf ] && . ./conf
+
+[ -f "$LOGDIR" ] && rm -f "$LOGDIR"
+[ ! -d "$LOGDIR" ] && install -m 755 -o $LOGUSER -g $LOGUSER -d "$LOGDIR"
+
+# manage log config file
+# see https://gitlab.com/flussence/runit-scripts/blob/master/svlogd.run.sh
+if [ -f "$UPDIR"/log.config ]; then
+  install -Tm 0644 -o $LOGUSER "$UPDIR"/log.config "$LOGDIR"/config
+elif [ -f "$PWD"/log.config ]; then
+  install -Tm 0644 -o $LOGUSER "$PWD"/log.config "$LOGDIR"/config
+fi
+
+exec chpst -u${LOGUSER} svlogd -tt -b $BUFFER "$LOGDIR"
