@@ -16,8 +16,10 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
-# limit data segment
+# set defaults
 [ -f ./conf/DATALIMIT ] && DATASEGMENT="-d $(grep -m 1 '[0-9]*' ./conf/DATALIMIT)"
+export IP=127.0.0.1
+export ROOT=${PWD}/root
 
 # run
 exec chpst -e ./conf -U tinydns $DATASEGMENT $DAEMON
