@@ -8,6 +8,9 @@ LOGDIR=/var/log/$SERVICE
 BUFFER=2048
 LOGUSER=daemon
 
+# fix supervise symlink
+[ -h ./supervise ] && rm ./supervise && mkdir -m 700 supervise
+
 # Read configuration file
 [ -r ./conf ] && . ./conf
 
