@@ -22,6 +22,9 @@ mountpoint -q /run/rpc_pipefs || mount -o nosuid,noexec,nodev -t rpc_pipefs rpc_
 # compatibility symlink
 ln -sf /run/shm /dev/shm
 
+# create path for runit supervise files
+[ -d /run/runit/supervise ] || mkdir -p /run/runit/supervise
+
 # Detect LXC virtualization containers
 grep -q lxc /proc/self/environ >/dev/null && export VIRTUALIZATION=1
 
