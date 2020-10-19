@@ -1,0 +1,23 @@
+#!/bin/sh
+# Tiny SSH daemon
+# (cloux@rote.ch)
+exec 2>&1
+
+DAEMON="$(command -v tinysshd)"
+[ -x "$DAEMON" ] || exit
+TCPSERVER="$(command -v tcpserver)"
+if [ -z "$TCPSERVER" ]; then
+	printf 'tinysshd: missing tcpserver, please install ucspi-tcp package.\n'
+	exit 1
+fi
+
+ADDRESS=0.0.0.0
+PORT=22
+SSHKEYDIR=/etc/tinyssh/sshkeydir
+[ -f /etc/default/tinysshd ] && . /etc/default/tinysshd
+[ -f ./conf ] && . ./conf
+
+# initialize key dir
+/usr/sbin/tinysshd-makekey -q "$SSHKEYDIR"
+
+exec $TCPSERVER -HRDl0 $ADDRESS $PORT $DAEMON $TINYSSHDOPTS -- "$SSHKEYDIR" 2>&1
