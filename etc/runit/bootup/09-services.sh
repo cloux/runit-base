@@ -47,3 +47,17 @@ if [ "$(command -v irqbalance)" ] && [ -d /etc/sv/irqbalance ]; then
 	[ $? -ne 0 ] && printf ' FAILED: %s' "$RET"
 	printf '\n'
 fi
+
+# KVM virtualization support
+# Enable these services only if kernel supports KVM
+printf '  KVM support: '
+if [ "$(command -v libvirtd)" ] && [ "$(command -v virtlogd)" ] &&
+   [ -d /sys/module/kvm ]; then
+	printf 'ACTIVATE'
+	RET=$(svactivate libvirtd virtlogd 2>&1)
+else
+	printf 'deactivate'
+	RET=$(svdeactivate libvirtd virtlogd 2>&1)
+fi
+[ $? -ne 0 ] && printf ' FAILED: %s' "$RET"
+printf '\n'
