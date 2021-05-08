@@ -29,4 +29,4 @@ if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
 	ln -sf "$(command -v sv)" /etc/init.d/$NAME
 fi
 
-exec chpst -u mysql "$DAEMON"
+exec prlimit --nofile=:65535 --nproc=:65535 chpst -u mysql "$DAEMON"
