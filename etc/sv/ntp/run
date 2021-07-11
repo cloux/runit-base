@@ -9,7 +9,7 @@ DAEMON=$(command -v ntpd)
 MODE=ntp
 $DAEMON --version | grep -q ntpsec && MODE=ntpsec
 [ -r /etc/default/$MODE ] && . /etc/default/$MODE
-[ "$IGNORE_DHCP" != "yes" ] && [ -e /run/$MODE.conf.dhcp ] && \
+[ "$IGNORE_DHCP" != "yes" ] && [ -e /run/$MODE.conf.dhcp ] &&
  NTPD_OPTS="$NTPD_OPTS -c /run/$MODE.conf.dhcp"
 NTPD_OPTS="$NTPD_OPTS -n -u $MODE:$MODE"
 
@@ -23,4 +23,4 @@ fi
 # kill unsupervised instance
 pkill -f "$DAEMON"
 
-exec $DAEMON $NTPD_OPTS
+exec $DAEMON $NTPD_OPTS >/dev/null 2>/dev/null
