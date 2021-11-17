@@ -3,20 +3,21 @@
 exec 2>&1
 
 DAEMON="$(command -v mysqld)"
+[ -x "$DAEMON" ] || DAEMON="$(command -v mariadbd)"
 [ -x "$DAEMON" ] || exit
 
 [ -f /etc/default/mysql ] && . /etc/default/mysql
 [ -f /etc/default/mariadb ] && . /etc/default/mariadb
-[ -e /var/run/mysqld ] || install -m 755 -o mysql -g root -d /var/run/mysqld
+[ -e /run/mysqld ] || install -m 755 -o mysql -g root -d /run/mysqld
 [ -d /var/log/mysql ] && chown mysql /var/log/mysql 2>/dev/null
 
-export HOME=/etc/mysql
-if [ ! -e "$HOME/my.cnf" ]; then
-	printf 'ERROR: %s/my.cnf is missing.\n' "$HOME"
+export HOME=/etc/mysql/
+if [ ! -e "${HOME}my.cnf" ]; then
+	printf 'ERROR: %smy.cnf is missing.\n' "$HOME"
 	exit 1
 fi
 
-DATADIR=$(grep -R '^datadir' "$HOME"/* 2>/dev/null | tail -n 1 | sed 's/.*=\s*//')
+DATADIR=$(grep -R '^datadir' "$HOME"* 2>/dev/null | tail -n 1 | sed 's/.*=\s*//')
 if [ ! -d "$DATADIR" ]; then
 	printf 'ERROR: datadir configuration in %s is invalid.\n' "$HOME"
 	exit 1
