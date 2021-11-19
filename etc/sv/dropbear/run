@@ -10,6 +10,11 @@ DAEMON=$(command -v "$NAME")
 DROPBEAR_PORT=22
 DROPBEAR_RECEIVE_WINDOW=65536
 DROPBEAR_EXTRA_ARGS=
+DROPBEAR_RSAKEY="/etc/dropbear/dropbear_rsa_host_key"
+DROPBEAR_DSSKEY="/etc/dropbear/dropbear_dss_host_key"
+DROPBEAR_ECDSAKEY="/etc/dropbear/dropbear_ecdsa_host_key"
+DROPBEAR_ED25519KEY="/etc/dropbear/dropbear_ed25519_host_key"
+
 [ -f /etc/default/dropbear ] && . /etc/default/dropbear
 [ -f ./conf ] && . ./conf
 [ -f "$DROPBEAR_BANNER" ] && DROPBEAR_EXTRA_ARGS="$DROPBEAR_EXTRA_ARGS -b $DROPBEAR_BANNER"
