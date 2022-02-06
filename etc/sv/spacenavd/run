@@ -17,4 +17,7 @@ fi
 # Wait for X11
 sv check X11dm >/dev/null || exit
 
+# ensure no other spacenavd is running
+pkill "$NAME"
+
 exec "$DAEMON" -d -v 2>/dev/null

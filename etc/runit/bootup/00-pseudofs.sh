@@ -9,6 +9,7 @@ mountpoint -q /sys || mount -o nosuid,noexec,nodev -t sysfs sys /sys
 mountpoint -q /sys/fs/pstore || mount -o nosuid,noexec,nodev -t pstore pstore /sys/fs/pstore
 mountpoint -q /sys/kernel/config || mount -t configfs configfs /sys/kernel/config 2>/dev/null
 mountpoint -q /sys/kernel/security || mount -t securityfs securityfs /sys/kernel/security 2>/dev/null
+mountpoint -q /sys/kernel/debug || mount -t debugfs none_debugs /sys/kernel/debug 2>/dev/null
 mountpoint -q /dev || mount -o mode=0755,nosuid -t devtmpfs dev /dev
 mkdir -p -m0755 /dev/pts
 mountpoint -q /dev/pts || mount -o mode=0620,gid=5,nosuid,noexec -n -t devpts devpts /dev/pts
