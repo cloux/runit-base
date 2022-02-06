@@ -12,7 +12,7 @@ if ! mountpoint -q /tmp; then
 	# RAM size must be at least 64MB
 	if [ "$RAMTMP" != "no" ]; then
 		MEM_TOTAL=$(grep '^MemTotal' /proc/meminfo | grep -o '[0-9]*' || printf 0)
-		[ "$MEM_TOTAL" -le 65536 ] &&	RAMTMP=no
+		[ "$MEM_TOTAL" -le 65536 ] && RAMTMP=no
 	fi
 
 	# mount
