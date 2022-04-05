@@ -1,0 +1,29 @@
+#!/bin/sh
+# ConnMan - network management daemon
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v connmand)"
+[ -x "$DAEMON" ] || exit
+
+[ -r /etc/default/connman ] && . /etc/default/connman
+
+# Start DBus
+sv up dbus >/dev/null
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+# kill unsupervised daemon
+pkill -x connmand
+# ensure no wpa_supplicant is running
+pkill -x wpa_supplicant && sleep 1
+# ensure rundir and resolv.conf symlink exists
+mkdir -p /run/connman
+ln -sf /run/connman/resolv.conf /etc/
+
+exec "$DAEMON" --nodaemon 2>/dev/null >/dev/null
