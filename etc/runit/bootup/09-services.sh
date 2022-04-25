@@ -50,7 +50,7 @@ fi
 
 # KVM virtualization support
 # Enable these services only if kernel supports KVM
-printf '  KVM support: '
+printf '   KVM support: '
 if [ "$(command -v libvirtd)" ] && [ "$(command -v virtlogd)" ] &&
    [ -d /sys/module/kvm ]; then
 	printf 'ACTIVATE'

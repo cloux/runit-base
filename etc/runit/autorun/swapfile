@@ -44,7 +44,7 @@ if [ ! -f "$SWAPFILE" ]; then
 		chmod 0600 "$SWAPFILE"
 		mkswap "$SWAPFILE"
 	else
-		printf 'Error: swapfile cannot be created. Free= space in %s is %s kB, required minimum is %s.\n' \
+		printf 'Error: swapfile cannot be created. Free space in %s is %s kB, required minimum is %s.\n' \
 		"$SWAP_PATH" "$FREESPACE" "$SWAPSIZE"
 	fi
 fi

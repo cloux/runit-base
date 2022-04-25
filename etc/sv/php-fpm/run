@@ -15,5 +15,7 @@ PHP_INI=$($DAEMON -i 2>/dev/null | grep -o '[^> ]*/php.ini' | tail -n 1)
 # if FPM php.ini is not available, use php.ini from php-cgi
 [ -f "$PHP_INI" ] || PHP_INI=$(php-cgi -i 2>/dev/null | grep -o '[^> ]*/php.ini' | tail -n 1)
 [ -f "$PHP_INI" ] || exit 0
+mkdir -p /run/php
+pkill -f "$DAEMON"
 
 exec $DAEMON --nodaemonize --fpm-config "$FPM_CONF" --php-ini "$PHP_INI"
