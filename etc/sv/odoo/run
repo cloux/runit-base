@@ -1,0 +1,23 @@
+#!/bin/sh
+# ODOO ERP system - https://www.odoo.com/page/download
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+CONFIG=/etc/odoo/odoo.conf
+LOGFILE=/var/log/odoo/odoo-server.log
+USER=odoo
+[ -r ./conf ] && . ./conf
+
+export LOGNAME=$USER
+
+# ensure sysvinit compatibility - replace init.d script with symlink to sv
+if [ -f /etc/init.d/$NAME ] && [ ! -h /etc/init.d/$NAME ]; then
+	mv -f /etc/init.d/$NAME /etc/init.d/${NAME}.sysv
+	ln -sf "$(command -v sv)" /etc/init.d/$NAME
+fi
+
+exec chpst -u${USER} "$DAEMON" --config "$CONFIG" --logfile "$LOGFILE" >/dev/null 2>/dev/null
