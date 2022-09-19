@@ -7,7 +7,10 @@ DAEMON=$(command -v ntpd)
 
 # support for both ntp and ntpsec
 MODE=ntp
-$DAEMON --version | grep -q ntpsec && MODE=ntpsec
+if $DAEMON --version | grep -q ntpsec; then
+	MODE=ntpsec
+	install -d /var/log/ntpsec -o ntpsec -g ntpsec
+fi
 [ -r /etc/default/$MODE ] && . /etc/default/$MODE
 [ "$IGNORE_DHCP" != "yes" ] && [ -e /run/$MODE.conf.dhcp ] &&
  NTPD_OPTS="$NTPD_OPTS -c /run/$MODE.conf.dhcp"
