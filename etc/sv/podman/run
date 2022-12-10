@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# podman - Simple management tool for pods, containers and images
+# (cloux@rote.ch)
+exec 2>&1
+
+NAME=${PWD##*/}
+DAEMON="$(command -v $NAME)"
+[ -x "$DAEMON" ] || exit
+
+# exit if socket is already present
+[ -S /run/podman/podman.sock ] && exit
+
+exec "$DAEMON" system service --time=0 >/dev/null 2>/dev/null
