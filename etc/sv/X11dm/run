@@ -12,22 +12,33 @@ if grep -wqs text /proc/cmdline; then
 	exit
 fi
 
+# read defaults
+DEFAULT_DISPLAY_MANAGER=''
+[ -r ./conf ] && . ./conf
+[ -r /etc/default/X11dm ] && . /etc/default/X11dm
+
 # find the X11 display manager
-DEFAULT_DISPLAY_MANAGER_FILE=/etc/X11/default-display-manager
-if [ ! -r "$DEFAULT_DISPLAY_MANAGER_FILE" ]; then
-	printf 'ERROR: %s display manager could not be determined, missing %s\n' "$NAME" "$DEFAULT_DISPLAY_MANAGER_FILE"
-	sv stop "$NAME" >/dev/null
-	exit
-fi
-DEFAULT_DISPLAY_MANAGER=$(head -n 1 "$DEFAULT_DISPLAY_MANAGER_FILE")
 if [ ! -x "$DEFAULT_DISPLAY_MANAGER" ]; then
-	printf 'ERROR: display manager "%s" can not be executed.\n' "$DEFAULT_DISPLAY_MANAGER"
-	sv stop "$NAME" >/dev/null
-	exit
+	[ -r "$DEFAULT_DISPLAY_MANAGER_FILE" ] || DEFAULT_DISPLAY_MANAGER_FILE=/etc/X11/default-display-manager
+	[ -r "$DEFAULT_DISPLAY_MANAGER_FILE" ] || DEFAULT_DISPLAY_MANAGER_FILE=/etc/sysconfig/displaymanager
+	[ -r "$DEFAULT_DISPLAY_MANAGER_FILE" ] || DEFAULT_DISPLAY_MANAGER_FILE=/etc/sysconfig/desktop
+	if [ ! -r "$DEFAULT_DISPLAY_MANAGER_FILE" ]; then
+		printf 'ERROR: %s display manager could not be determined.\n' "$NAME"
+		sv stop "$NAME" >/dev/null
+		exit
+	fi
+	DEFAULT_DISPLAY_MANAGER="$(head -n 1 "$DEFAULT_DISPLAY_MANAGER_FILE")"
+	if [ ! -x "$DEFAULT_DISPLAY_MANAGER" ]; then
+		printf 'ERROR: display manager "%s" can not be executed.\n' "$DEFAULT_DISPLAY_MANAGER"
+		sv stop "$NAME" >/dev/null
+		exit
+	fi
 fi
 
-# make sure login manager is up
-sv start elogind >/dev/null || exit
+# make sure the login manager is up, stop X11 on elogind timeout
+ELOGIND="$(sv start elogind)"
+printf '%s' "$ELOGIND" | grep -q '^timeout:' && sv stop "$NAME" && exit
+printf '%s' "$ELOGIND" | grep -q '^ok: *run:' || exit
 
 # export locale
 [ -r /etc/default/locale ] && . /etc/default/locale
