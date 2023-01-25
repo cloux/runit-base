@@ -17,4 +17,4 @@ fi
 # Include libvirtd defaults if available
 [ -f /etc/default/libvirtd ] && . /etc/default/libvirtd
 
-exec "$DAEMON" $libvirtd_opts 2>/dev/null
+exec "$DAEMON" $LIBVIRTD_ARGS 2>/dev/null
