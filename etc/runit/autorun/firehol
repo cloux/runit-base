@@ -6,7 +6,7 @@
 [ -x /usr/sbin/firehol ] || exit
 set -a
 [ -f /etc/default/firehol ] && . /etc/default/firehol
-printf '%s' "$START_FIREHOL" | grep -iq 'yes' || exit
+printf '%s' "$START_FIREHOL" | grep -q 'YES' || exit
 
 # firehol requires iptables-legacy, see
 # https://github.com/netblue30/firejail/issues/2232#issuecomment-436423748 
