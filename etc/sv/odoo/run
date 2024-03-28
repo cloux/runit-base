@@ -1,6 +1,6 @@
 #!/bin/sh
 # ODOO ERP system - https://www.odoo.com/page/download
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

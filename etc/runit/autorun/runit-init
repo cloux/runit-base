@@ -3,7 +3,7 @@
 # Integrate runit system commands
 # rename original files to *.sysv
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 #
 
 apply_runit_cmd() {

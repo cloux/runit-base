@@ -1,6 +1,6 @@
 #!/bin/sh
 # Docker - Create self-sufficient containers
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

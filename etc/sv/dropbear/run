@@ -1,6 +1,6 @@
 #!/bin/sh
 # Dropbear - Lightweight SSH server
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

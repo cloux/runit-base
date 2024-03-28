@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # integrate socket loging into /var/log/ directory
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 
 LOGDIR=/var/log
 LOGUSER=daemon

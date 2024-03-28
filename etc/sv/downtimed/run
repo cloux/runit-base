@@ -2,7 +2,7 @@
 # Monitor system downtime
 # NOTE: default logging facility is syslog: deamon
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

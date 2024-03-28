@@ -1,6 +1,6 @@
 #!/bin/sh
 # Pure-ftpd server
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 CONF_DIR=/etc/pure-ftpd/conf

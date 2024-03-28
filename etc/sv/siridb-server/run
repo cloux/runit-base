@@ -1,6 +1,6 @@
 #!/bin/sh
 # SiriDB - Time series database server
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 DAEMON="$(command -v siridb-server)"

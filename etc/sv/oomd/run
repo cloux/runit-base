@@ -2,7 +2,7 @@
 # OOMD - Out Of Memory killer Daemon
 # https://github.com/facebookincubator/oomd
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 DAEMON=$(command -v oomd)

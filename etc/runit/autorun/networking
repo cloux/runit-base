@@ -1,7 +1,7 @@
 #!/bin/sh
 # Raise network interfaces. 
 # Loosely based on /etc/init.d/networking
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 
 RUN_DIR="/run/network"
 IFSTATE="$RUN_DIR/ifstate"

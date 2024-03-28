@@ -1,5 +1,5 @@
 #!/bin/sh
 # Stop NFS client and server support services
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 
 sv down /etc/service/rpc.* >/dev/null

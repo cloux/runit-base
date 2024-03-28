@@ -38,7 +38,7 @@ This work is free. You can redistribute it and/or modify it under the terms of t
 ---
 ## Author
 
-This repository is maintained by _cloux@rote.ch_
+This repository is maintained by _jan@wespe.dev_
 
 ### Disclaimer
 

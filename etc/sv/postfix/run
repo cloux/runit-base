@@ -4,7 +4,7 @@
 # NOTE: this works for single-instance postfix configuration only,
 #       since spawning of multiple instances cannot be supervised!
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 # ensure sysvinit compatibility - replace init.d script with symlink to sv

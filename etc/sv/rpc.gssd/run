@@ -1,7 +1,7 @@
 #!/bin/sh
 # RPCSEC_GSS daemon - provide strong security for NFS
 # Activated automatically from rpcbind
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=rpc.gssd

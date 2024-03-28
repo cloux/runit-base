@@ -5,7 +5,7 @@
 # config file /etc/openvpn/NAME.conf must exist. If the service directory is
 # just /etc/sv/openvpn, then /etc/openvpn/openvpn.conf will be used.
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 
 exec 2>&1
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 # etcd - highly-available key value store
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

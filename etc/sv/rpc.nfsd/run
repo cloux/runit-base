@@ -1,7 +1,7 @@
 #!/bin/sh
 # NFS server process - user level part of the NFS service
 # Activated automatically from rpc.mountd
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=rpc.nfsd

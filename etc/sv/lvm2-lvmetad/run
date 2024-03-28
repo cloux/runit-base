@@ -1,6 +1,6 @@
 #!/bin/sh
 # LVM metadata cache daemon
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=lvmetad

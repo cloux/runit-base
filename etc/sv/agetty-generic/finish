@@ -2,7 +2,7 @@
 #
 # Write an empty record for tty to the wtmp file
 # to indicate that the user on the terminal has logged out
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 
 tty=${PWD##*-}
 [ $(expr "$tty" : '^[0-9]*$') -gt 0 ] && tty=tty${tty}

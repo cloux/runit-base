@@ -2,7 +2,7 @@
 # PostgreSQL Cluster
 # see 'man pg_ctlcluster' and 'man pg_ctl' for details
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 DAEMON="$(command -v pg_ctlcluster)"

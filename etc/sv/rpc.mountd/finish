@@ -1,6 +1,6 @@
 #!/bin/sh
 # Stop additional nfs-kernel-server services
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 sv down rpc.svcgssd >/dev/null

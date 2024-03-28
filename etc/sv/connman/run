@@ -1,6 +1,6 @@
 #!/bin/sh
 # ConnMan - network management daemon
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

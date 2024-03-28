@@ -6,7 +6,7 @@
 # the client uses nfsidmap instead, and only falls back to rpc.idmapd
 # if there was a problem running the nfsidmap program.
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=rpc.idmapd

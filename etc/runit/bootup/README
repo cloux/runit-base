@@ -6,4 +6,4 @@ Executable bit is not required.
 This bootup script structure is based on core-services in VOID Linux:
 https://github.com/void-linux/void-runit/tree/master/core-services
 
-(cloux@rote.ch)
+(jan@wespe.dev)

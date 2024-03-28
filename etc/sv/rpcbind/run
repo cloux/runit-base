@@ -1,7 +1,7 @@
 #!/bin/sh
 # NFS common client and server universal addresses to RPC program number mapper
 # Equivalent of /etc/init.d/nfs-common
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

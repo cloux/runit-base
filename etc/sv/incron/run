@@ -1,7 +1,7 @@
 #!/bin/sh
 # The inotify cron daemon (incrond) monitors filesystem events
 # and executes commands defined in system and user tables.
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 DAEMON=$(command -v incrond)

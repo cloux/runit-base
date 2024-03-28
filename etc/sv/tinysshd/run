@@ -1,6 +1,6 @@
 #!/bin/sh
 # Tiny SSH daemon
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 DAEMON="$(command -v tinysshd)"

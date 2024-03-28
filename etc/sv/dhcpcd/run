@@ -1,6 +1,6 @@
 #!/bin/sh
 # DHCP and BOOTP IPv4+IPv6 Client
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

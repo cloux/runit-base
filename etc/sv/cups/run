@@ -2,7 +2,7 @@
 #
 # Common Unix Printing System - Printing spooler and server
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

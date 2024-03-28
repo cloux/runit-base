@@ -4,7 +4,6 @@
 # NOTE: this is run in series during boot. Slow
 # commands (e.g. network checks) will cost you boot time!
 #
-# (cloux@rote.ch)
 
 printf '=> System info:\n'
 printf '   Time: %s\n' "$(date --iso-8601=seconds)"

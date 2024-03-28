@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Run agetty on a terminal
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 
 BAUD_RATE="115200"
 TERM_NAME="linux"

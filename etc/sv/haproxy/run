@@ -2,7 +2,7 @@
 #
 # HAProxy - fast and reliable http reverse proxy and load balancer
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 exec 2>&1
 
 NAME=${PWD##*/}

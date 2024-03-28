@@ -7,7 +7,7 @@
 # These scripts should perform tasks only needed once after boot,
 # they should not daemonize and will not be supervised.
 #
-# (cloux@rote.ch)
+# (jan@wespe.dev)
 
 if ls -l /etc/runit/autorun/ 2>/dev/null | grep -q '^[rw\-]*[xs]'; then
 	printf '=> Starting autorun scripts in parallel:\n'
