@@ -3,7 +3,7 @@
 
 ## Project Migration
 
-**This repository was deprecated and replaced by [s6-init project at Codeberg](https://codeberg.org/wespe/s6-init)**. This repo remains here for archive purposes only and will receive no further updates.
+**This repository was deprecated and replaced by [s6-init project at Codeberg](https://codeberg.org/wespe/s6-base)**. This repo remains here for archive purposes only and will receive no further updates.
 
 ---
 
