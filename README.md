@@ -1,11 +1,18 @@
-<a href="https://devuan.org/os/init-freedom/"><img src="https://devuan.org/ui/img/if.png" width="110" height="150" align="right"></a>
+<a href="https://devuan.org/os/init-freedom"><img src="https://devuan.org/ui/img/if.png" width="110" height="150" align="right"></a>
 # Runit base
+
+## Project Migration
+
+**This repository was deprecated and replaced by [s6-init project at Codeberg](https://codeberg.org/wespe/s6-init)**. This repo remains here for archive purposes only and will receive no further updates.
+
+---
 
 ## About
 
 This is a collection of runit-init scripts and config files required for runit when used as the default init system, PID1 process and service supervisor. This repository should work with any runit installation, but was developed specifically for [aws-devuan](https://github.com/cloux/aws-devuan) in combination with other tools provided by [Simple Installer](https://github.com/cloux/sin).
 
 ---
+
 ## Features
 
  * collection of daemontools-compatible [runscripts](etc/sv)
@@ -14,6 +21,7 @@ This is a collection of runit-init scripts and config files required for runit w
  * networking, cron and other scripts that include runit support
 
 ---
+
 ## Installation
 
 Installation method depends on your use case. The preferred and tested method to install runit as the default init system is using the [Simple Installer](https://github.com/cloux/sin) and run:
@@ -30,12 +38,14 @@ cp -ufvRP -t /etc/sv/ runit-base/etc/sv/
 ```
 
 ---
+
 <a href="http://www.wtfpl.net"><img src="http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-2.png" align="right"></a>
 ## License
 
 This work is free. You can redistribute it and/or modify it under the terms of the Do What The Fuck You Want To Public License, Version 2, as published by Sam Hocevar. See http://www.wtfpl.net for more details. If you feel that releasing this work under WTFPL is not appropriate, since some of the code might be derivative and thus possibly breaking some other license... just do WTF you want to.
 
 ---
+
 ## Author
 
 This repository is maintained by _jan@wespe.dev_

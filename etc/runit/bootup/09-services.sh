@@ -51,9 +51,9 @@ fi
 # KVM virtualization support
 # Enable these services only if kernel supports KVM
 printf '   KVM support: '
-if [ "$(command -v libvirtd)" ] && [ "$(command -v virtlogd)" ] &&
-   [ -d /sys/module/kvm ]; then
+if [ "$(command -v libvirtd)" ] && [ "$(command -v virtlogd)" ]; then
 	printf 'ACTIVATE'
+	svdeactivate dnsmasq >/dev/null
 	RET=$(svactivate libvirtd virtlogd 2>&1)
 else
 	printf 'deactivate'

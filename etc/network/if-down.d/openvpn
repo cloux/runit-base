@@ -9,7 +9,10 @@ SYSTEMD=/run/systemd/system
 
 if [ -n "$IF_OPENVPN" ]; then
 	for vpn in $IF_OPENVPN; do
-		if [ "$(pgrep runsvdir)" ]; then
+		if [ "$(pgrep s6-svscan | head -n 1)" != 1 ]; then
+			# s6 supervisor
+			s6-svc -d /run/service/openvpn* >/dev/null || true
+		elif [ "$(pgrep runsvdir)" ]; then
 			# runit supervisor
 			sv down /etc/service/openvpn* >/dev/null || true
 		elif [ -d $SYSTEMD ]; then

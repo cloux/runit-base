@@ -15,7 +15,11 @@
 # Is /usr mounted?
 [ -e /usr/sbin/sshd ] || exit
 
-if [ "$(pgrep runsvdir)" ] && [ -f /etc/service/ssh ]; then
+if [ "$(pgrep s6-svscan | head -n 1)" != 1 ]; then
+  # s6 supervisor
+  s6-svc -r /run/service/ssh >/dev/null
+elif [ "$(pgrep runsvdir)" ] && [ -f /etc/service/ssh ]; then
+  # runit supervisor
   sv restart ssh >/dev/null
 elif [ ! -f /etc/service/ssh ]; then
   ([ ! -f /run/sshd.pid ] || [ "$(ps -p "$(cat /run/sshd.pid)" -o comm=)" != sshd ]) && exit

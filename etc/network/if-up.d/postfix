@@ -19,7 +19,10 @@ fi
 if [ ! -x /sbin/resolvconf ]; then
 	f=/etc/resolv.conf
 	cp $f $(postconf -hx queue_directory)$f 2>/dev/null || exit
-	if [ "$(pgrep runsvdir)" ]; then
+	if [ "$(pgrep s6-svscan | head -n 1)" != 1 ]; then
+		# s6 supervisor
+		s6-svc -h /run/service/postfix >/dev/null || true
+	elif [ "$(pgrep runsvdir)" ]; then
 		sv reload postfix >/dev/null || true
 	elif [ -n "$RUNNING" ]; then
 		service postfix reload >/dev/null 2>&1
